@@ -1,9 +1,6 @@
 package com.example.transbus.entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,18 +9,20 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Usuario {
+public class Onibus {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long id;
 
-    public String nome;
+    public String placa;
 
-    public String cpf;
+    public String modelo;
 
-    public String senha;
+    public String capacidade;
 
-    public String email;
+    @Enumerated(EnumType.STRING)
+    public EnumStatusOnibus status;
 
 }
+
