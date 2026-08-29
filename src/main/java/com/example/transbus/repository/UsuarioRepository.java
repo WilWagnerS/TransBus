@@ -1,9 +1,16 @@
 package com.example.transbus.repository;
 
+import com.example.transbus.entities.EnumStatusUsuario;
 import com.example.transbus.entities.Usuario;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
+
+    boolean existsUsuarioByEmailAndSenha(String email, String senha);
+
+    //Optional<List<Usuario>> findByStatusNot(EnumStatusUsuario status);
 }

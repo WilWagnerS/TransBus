@@ -1,6 +1,8 @@
 package com.example.transbus.controllers;
 
-import com.example.transbus.DTOs.LoginRequestDTO;
+import com.example.transbus.DTOs.LoginRequest;
+import com.example.transbus.DTOs.LoginResponse;
+import com.example.transbus.repository.UsuarioRepository;
 import com.example.transbus.services.TokenService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -21,15 +23,20 @@ public class AuthController {
     @Autowired
     private TokenService tokenService;
 
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+
+
     @PostMapping("/login")
     @Operation(description = "Metodo de login", summary = "Autenticação de usuarios")
-    public ResponseEntity<?> login(@RequestBody LoginRequestDTO loginRequestDTO){
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequestDTO){
 
-        if(loginRequestDTO.email().equals("string")&& loginRequestDTO.senha().equals("string")){
+
+        if(usuarioRepository.existsUsuarioByEmailAndSenha(loginRequestDTO.email(), loginRequestDTO.senha())){
 
             var token = tokenService.gerarToken(loginRequestDTO.email());
             //Gerar o token
-            return ResponseEntity.ok(token);
+            return ResponseEntity.ok(new LoginResponse(token));
         }
         return ResponseEntity.status(HttpURLConnection.HTTP_UNAUTHORIZED).build();
     }

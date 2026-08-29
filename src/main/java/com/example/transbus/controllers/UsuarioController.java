@@ -29,6 +29,16 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarioRepository.findAll());
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<Usuario> buscarPorId(@PathVariable Long id){
+
+        Usuario usuarioBanco = usuarioRepository.findById(id).orElse(null);
+        if(usuarioBanco!= null){
+            return ResponseEntity.ok(usuarioBanco);
+        }
+        return ResponseEntity.notFound().build();
+    }
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Metodo de criação de usuarios!",
@@ -74,6 +84,7 @@ public class UsuarioController {
 
     @DeleteMapping("/{id}/excluir")
     public ResponseEntity<Void> excluir(@PathVariable Long id){
+
         Usuario usuarioBanco = usuarioRepository.findById(id).orElse(null);
         if(usuarioBanco!= null){
             usuarioBanco.setStatus(EnumStatusUsuario.EXCLUIDO);
