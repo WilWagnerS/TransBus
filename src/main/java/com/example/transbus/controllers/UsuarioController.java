@@ -1,4 +1,5 @@
 package com.example.transbus.controllers;
+
 import com.example.transbus.DTOs.AtualizarStatusRequest;
 import com.example.transbus.entities.EnumStatusUsuario;
 import com.example.transbus.entities.Usuario;
@@ -9,8 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/usuarios")
@@ -49,13 +48,13 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarioBanco);
     }
 
-    @PatchMapping("/{id}status")
+    @PatchMapping("/{id}/status")
     public ResponseEntity<Void> atualizarStatus(@PathVariable Long id, @RequestBody AtualizarStatusRequest statusRequest){
 
         //usuarioBanco pra entender que é o usuario que veio do banco.
         Usuario usuarioBanco = usuarioRepository.findById(id).orElse(null);
         if(usuarioBanco!= null){
-            usuarioBanco.setStatus(statusRequest.status());
+            usuarioBanco.setStatus(statusRequest.statusUsuario());
             usuarioRepository.save(usuarioBanco);
             return ResponseEntity.ok().build();
         }

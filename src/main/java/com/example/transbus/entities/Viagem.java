@@ -15,25 +15,25 @@ public class Viagem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public Long id;
+    private Long id;
 
-    public String origem;
+    private String origem;
 
-    public String destino;
+    private String destino;
 
-    public LocalDateTime horarioInicio;
+    private LocalDateTime horarioInicio;
 
-    public LocalDateTime horarioFim;
+    private LocalDateTime horarioFim;
 
     @Enumerated(EnumType.STRING)
-    public EnumStatusViagem status;
+    private EnumStatusViagem status = EnumStatusViagem.AGENDADA;
 
     @ManyToOne
     @JoinColumn(name = "motorista_id")
-    public Motorista motorista;
+    private Motorista motorista;
 
     @ManyToOne
     @JoinColumn(name = "onibus_id")
-    public Onibus onibus;
+    private Onibus onibus;
 
 }

@@ -13,16 +13,16 @@ public class Onibus {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public Long id;
+    private Long id;
 
-    public String placa;
+    private String placa;
 
-    public String modelo;
+    private String modelo;
 
-    public String capacidade;
+    private String capacidade;
 
     @Enumerated(EnumType.STRING)
-    public EnumStatusOnibus status;
+    private EnumStatusOnibus status = EnumStatusOnibus.GARAGEM;
 
 }
 

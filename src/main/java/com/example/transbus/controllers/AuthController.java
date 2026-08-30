@@ -32,7 +32,9 @@ public class AuthController {
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequestDTO){
 
 
-        if(usuarioRepository.existsUsuarioByEmailAndSenha(loginRequestDTO.email(), loginRequestDTO.senha())){
+        if(usuarioRepository.existsUsuarioByEmailAndSenha(
+                loginRequestDTO.email(),
+                loginRequestDTO.senha())){
 
             var token = tokenService.gerarToken(loginRequestDTO.email());
             //Gerar o token
