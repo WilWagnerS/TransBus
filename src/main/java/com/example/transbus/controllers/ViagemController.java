@@ -2,7 +2,6 @@ package com.example.transbus.controllers;
 
 import com.example.transbus.DTOs.AtualizarStatusRequest;
 import com.example.transbus.entities.EnumStatusViagem;
-import com.example.transbus.entities.Usuario;
 import com.example.transbus.entities.Viagem;
 import com.example.transbus.repository.ViagemRepository;
 import io.swagger.v3.oas.annotations.Operation;
@@ -63,7 +62,7 @@ public class ViagemController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Usuario> atualizar(@PathVariable Long id, @RequestBody Viagem viagem){
+    public ResponseEntity<Viagem> atualizar(@PathVariable Long id, @RequestBody Viagem viagem){
 
         try{
             Viagem viagemBanco = viagemRepository.findById(id).orElse(null);
