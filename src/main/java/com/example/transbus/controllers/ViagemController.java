@@ -1,8 +1,12 @@
 package com.example.transbus.controllers;
 
 import com.example.transbus.DTOs.AtualizarStatusRequest;
+import com.example.transbus.entities.EnumStatusMotorista;
+import com.example.transbus.entities.EnumStatusOnibus;
 import com.example.transbus.entities.EnumStatusViagem;
 import com.example.transbus.entities.Viagem;
+import com.example.transbus.repository.MotoristaRepository;
+import com.example.transbus.repository.OnibusRepository;
 import com.example.transbus.repository.ViagemRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -19,6 +23,12 @@ public class ViagemController {
 
     @Autowired
     private ViagemRepository viagemRepository;
+
+    @Autowired
+    private MotoristaRepository motoristaRepository;
+
+    @Autowired
+    private OnibusRepository onibusRepository;
 
     @GetMapping
     @Operation(summary = "Metodo de consulta de lista de viagem!",
@@ -43,6 +53,34 @@ public class ViagemController {
     @Operation(summary = "Metodo de criação de viagem!",
             description = "Metodo responsavel em efetuar a criação de novas viagens!")
     public ResponseEntity<Viagem> criar(@RequestBody Viagem viagem){
+
+        var motoristaBanco = motoristaRepository.
+                findById(viagem.getMotorista().getId()).orElse(null);
+
+        if(motoristaBanco == null){
+            return ResponseEntity.notFound().build();
+        }
+
+        if(motoristaBanco.getStatus() != EnumStatusMotorista.EM_EXPEDIENTE){
+            return ResponseEntity.badRequest().build();
+        }
+
+        viagem.setMotorista(motoristaBanco);
+
+
+        var onibusBanco = onibusRepository
+                .findById(viagem.getOnibus().getId()).orElse(null);
+
+        if(onibusBanco == null){
+            return ResponseEntity.notFound().build();
+        }
+
+        if(onibusBanco.getStatus() != EnumStatusOnibus.GARAGEM){
+            return ResponseEntity.badRequest().build();
+        }
+
+        viagem.setOnibus(onibusBanco);
+
 
         var viagemBanco = viagemRepository.save(viagem);
         return ResponseEntity.ok(viagemBanco);
