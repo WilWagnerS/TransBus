@@ -39,6 +39,7 @@ public class ViagemController {
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Método responsável pela consulta de uma viagem pelo ID!")
     public ResponseEntity<Viagem> buscarPorId(@PathVariable Long id){
 
         Viagem viagemBanco = viagemRepository.findById(id).orElse(null);
@@ -87,6 +88,7 @@ public class ViagemController {
     }
 
     @PatchMapping("/{id}/status")
+    @Operation(summary = "Método responsável pela alteração do status da viagem!")
     public ResponseEntity<Void> atualizarStatus(@PathVariable Long id, @RequestBody AtualizarStatusRequest statusRequest){
 
         //viagemBanco pra entender que é a viagem que veio do banco.
@@ -100,6 +102,7 @@ public class ViagemController {
     }
 
     @PutMapping("/{id}")
+    @Operation(summary = "Método responsável pela atualização dos dados da viagem!")
     public ResponseEntity<Viagem> atualizar(@PathVariable Long id, @RequestBody Viagem viagem){
 
         try{
@@ -120,6 +123,7 @@ public class ViagemController {
     }
 
     @DeleteMapping("/{id}/cancelar")
+    @Operation(summary = "Método responsável pelo cancelamento da viagem!")
     public ResponseEntity<Void> cancelar(@PathVariable Long id){
 
         Viagem viagemBanco = viagemRepository.findById(id).orElse(null);

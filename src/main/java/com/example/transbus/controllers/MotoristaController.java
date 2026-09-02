@@ -30,6 +30,7 @@ public class MotoristaController {
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Método responsável pela consulta de um motorista pelo ID!")
     public ResponseEntity<Motorista> buscarPorId(@PathVariable Long id){
 
         Motorista motoristaBanco = motoristaRepository.findById(id).orElse(null);
@@ -50,6 +51,7 @@ public class MotoristaController {
     }
 
     @PatchMapping("/{id}/status")
+    @Operation(summary = "Método responsável pela alteração do status do motorista!")
     public ResponseEntity<Void> atualizarStatus(@PathVariable Long id, @RequestBody AtualizarStatusRequest statusRequest){
 
         //motoristaBanco pra entender que é o motorista que veio do banco.
@@ -63,6 +65,7 @@ public class MotoristaController {
     }
 
     @PutMapping("/{id}")
+    @Operation(summary = "Método responsável pela atualização dos dados do motorista!")
     public ResponseEntity<Motorista> atualizar(@PathVariable Long id, @RequestBody Motorista motorista){
 
         try{
@@ -82,6 +85,7 @@ public class MotoristaController {
     }
 
     @DeleteMapping("/{id}/excluir")
+    @Operation(summary = "Método responsável pela exclusão do motorista!")
     public ResponseEntity<Void> excluir(@PathVariable Long id){
 
         Motorista motoristaBanco = motoristaRepository.findById(id).orElse(null);

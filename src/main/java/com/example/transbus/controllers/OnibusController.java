@@ -30,6 +30,7 @@ public class OnibusController {
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Método responsável pela consulta de um ônibus pelo ID!")
     public ResponseEntity<Onibus> buscarPorId(@PathVariable Long id){
 
         Onibus onibusBanco = onibusRepository.findById(id).orElse(null);
@@ -50,6 +51,7 @@ public class OnibusController {
     }
 
     @PatchMapping("/{id}/status")
+    @Operation(summary = "Método responsável pela alteração do status do ônibus!")
     public ResponseEntity<Void> atualizarStatus(@PathVariable Long id, @RequestBody AtualizarStatusRequest statusRequest){
 
         //onibusBanco pra entender que é o onibus que veio do banco.
@@ -63,6 +65,7 @@ public class OnibusController {
     }
 
     @PutMapping("/{id}")
+    @Operation(summary = "Método responsável pela atualização dos dados do ônibus!")
     public ResponseEntity<Onibus> atualizar(@PathVariable Long id, @RequestBody Onibus onibus){
 
         try{
@@ -82,6 +85,7 @@ public class OnibusController {
     }
 
     @DeleteMapping("/{id}/excluir")
+    @Operation(summary = "Método responsável pela exclusão do ônibus!")
     public ResponseEntity<Void> excluir(@PathVariable Long id){
 
         Onibus onibusBanco = onibusRepository.findById(id).orElse(null);

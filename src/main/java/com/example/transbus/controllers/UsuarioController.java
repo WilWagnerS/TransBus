@@ -1,9 +1,11 @@
 package com.example.transbus.controllers;
 
+import com.example.transbus.DTOs.AlterarSenhaRequest;
 import com.example.transbus.DTOs.AtualizarStatusRequest;
 import com.example.transbus.entities.EnumStatusUsuario;
 import com.example.transbus.entities.Usuario;
 import com.example.transbus.repository.UsuarioRepository;
+import com.example.transbus.services.TokenService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +22,9 @@ public class UsuarioController {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
+    @Autowired
+    private TokenService tokenService;
+
     @GetMapping
     @Operation(summary = "Metodo de consulta de lista de usuarios!",
             description = "Metodo responsavel em efetuar a consulta de todos os usuarios sem filtro!")
@@ -29,6 +34,7 @@ public class UsuarioController {
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Método responsável pela consulta de um usuário pelo ID!")
     public ResponseEntity<Usuario> buscarPorId(@PathVariable Long id){
 
         Usuario usuarioBanco = usuarioRepository.findById(id).orElse(null);
@@ -49,6 +55,7 @@ public class UsuarioController {
     }
 
     @PatchMapping("/{id}/status")
+    @Operation(summary = "Método responsável pela alteração do status do usuário!")
     public ResponseEntity<Void> atualizarStatus(@PathVariable Long id, @RequestBody AtualizarStatusRequest statusRequest){
 
         //usuarioBanco pra entender que é o usuario que veio do banco.
@@ -62,6 +69,7 @@ public class UsuarioController {
     }
 
     @PutMapping("/{id}")
+    @Operation(summary = "Método responsável pela atualização dos dados do usuário!")
     public ResponseEntity<Usuario> atualizar(@PathVariable Long id, @RequestBody Usuario usuario){
 
         try{
@@ -82,6 +90,7 @@ public class UsuarioController {
     }
 
     @DeleteMapping("/{id}/excluir")
+    @Operation(summary = "Método responsável pela exclusão do usuário!")
     public ResponseEntity<Void> excluir(@PathVariable Long id){
 
         Usuario usuarioBanco = usuarioRepository.findById(id).orElse(null);
@@ -91,5 +100,31 @@ public class UsuarioController {
             return ResponseEntity.ok().build();
         }
         return ResponseEntity.notFound().build();
+    }
+
+    @PutMapping("/alterar/senha")
+    @Operation(summary = "Método responsável por alterar a senha do usuário!")
+    public ResponseEntity<Void> alterarSenha(@RequestHeader("Authorization") String authorization,
+                                             @RequestBody AlterarSenhaRequest alterarSenhaRequest) {
+
+        String token = authorization.replace("Bearer ", "");
+        var jwtValidador = tokenService.verificarToken(token);
+
+        String email = jwtValidador.getSubject();
+        var usuarioOptional = usuarioRepository.findByEmail(email);
+
+        if(usuarioOptional.isEmpty()){
+            return ResponseEntity.notFound().build();
+        }
+        var usuario = usuarioOptional.get();
+
+        if(!usuario.getSenha().equals(alterarSenhaRequest.senhaAtual())){
+            return ResponseEntity.badRequest().build();
+        }
+
+        usuario.setSenha(alterarSenhaRequest.novaSenha());
+        usuarioRepository.save(usuario);
+
+        return ResponseEntity.ok().build();
     }
 }
