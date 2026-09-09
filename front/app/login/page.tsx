@@ -13,13 +13,13 @@ export default function Login(){
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-slate-950 px-4">
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-[#020617] to-[#0d2872] px-4">
             <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl p-8 space-y-6 border border-slate-800">
                 <div className="text-center">
                     <h1 className="text-3xl font-bold text-slate-900">
                         Entrar no sistema
                     </h1>
-                    <p className="text-sm text-slate-400">Insira suas credenciais para acessar o painel</p>
+                    <p className="text-sm text-slate-400">Insira suas credenciais para acessar.</p>
                 </div>
                 <form action={handleLogin} className="flex flex-col space-y-5">
 

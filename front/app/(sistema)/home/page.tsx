@@ -6,5 +6,6 @@ export default function Home() {
         <h1 className="text-4xl md:text-6xl font-extrabold text-white tracking-tight text-center">
             Bem-vindo ao <span className="text-orange-500">TransBus</span>
         </h1>
-    </div>);
+    </div>
+    );
 }

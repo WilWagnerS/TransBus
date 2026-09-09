@@ -1,8 +1,7 @@
-import Image from "next/image";
 import Link from "next/link";
 
 export default function Home() {
- return (
+  return (
     <>
       {/* INJEÇÃO DO CSS NO PRÓPRIO ARQUIVO */}
       <style dangerouslySetInnerHTML={{ __html: `
@@ -10,16 +9,23 @@ export default function Home() {
            VARIÁVEIS DE COR E ESTILO BASE
            ========================================= */
         :root {
-          --cor-grafite: #474747;
-          --cor-grafite-claro: #646464 ;
-          --cor-azul-aqua: #00B4D8;
-          --cor-azul-aqua-escuro: #0096b4;
-          --cor-laranja: #F77F00;
-          --cor-laranja-hover: #d66d00;
-          --cor-branco: #fafafa;
-          --cor-fundo: #a0a0a0;
+          /* Paleta Azul Marinho (Baseado no Tailwind Slate) */
+          --cor-slate-950: #020617; /* Fundo escuro intenso (Rodapé e Hero) */
+          --cor-slate-900: #0f172a; /* Títulos e textos fortes */
+          --cor-slate-800: #1e293b; /* Elementos secundários escuros */
+          --cor-slate-700: #334155; /* Textos de parágrafos */
           
-          --fonte-principal: 'Nexa', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+          /* Tons Claros para Fundo */
+          --cor-slate-50: #f8fafc;
+          --cor-slate-100: #f1f5f9;
+
+          /* Destaques Vibrantes */
+          --cor-laranja: #f97316;       /* orange-500 */
+          --cor-laranja-hover: #ea580c; /* orange-600 */
+
+          --cor-branco: #ffffff;
+          
+          --fonte-principal: 'Bebas', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
 
         * {
@@ -30,8 +36,8 @@ export default function Home() {
 
         body {
           font-family: var(--fonte-principal);
-          background-color: var(--cor-fundo);
-          color: var(--cor-grafite);
+          background-color: var(--cor-slate-50);
+          color: var(--cor-slate-700);
           line-height: 1.6;
           -webkit-font-smoothing: antialiased;
         }
@@ -48,7 +54,7 @@ export default function Home() {
            ========================================= */
         header {
           background-color: var(--cor-branco);
-          box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+          box-shadow: 0 2px 10px rgba(2, 6, 23, 0.08); /* Sombra suave baseada no slate */
           position: sticky;
           top: 0;
           z-index: 100;
@@ -62,17 +68,17 @@ export default function Home() {
         }
 
         .logo {
-          font-size: 24px;
+          font-size: 30px;
           font-weight: 800;
-          color: var(--cor-grafite);
+          color: var(--cor-slate-950);
           text-decoration: none;
           display: flex;
           align-items: center;
-          gap: 8px;
+          gap: 1px;
         }
 
         .logo span {
-          color: var(--cor-azul-aqua);
+          color: var(--cor-laranja);
         }
 
         .btn-login {
@@ -85,7 +91,7 @@ export default function Home() {
           font-weight: 600;
           cursor: pointer;
           text-decoration: none;
-          transition: background-color 0.3s ease;
+          transition: background-color 0.3s ease, transform 0.2s ease;
         }
 
         .btn-login:hover {
@@ -96,7 +102,8 @@ export default function Home() {
            HERO SECTION (Destaque Principal)
            ========================================= */
         .hero {
-          background: linear-gradient(135deg, var(--cor-grafite) 0%, var(--cor-grafite-claro) 100%);
+          /* Gradiente moderno usando os tons slate mais escuros */
+          background: linear-gradient(135deg, var(--cor-slate-950) 0%, var(--cor-slate-900) 100%);
           color: var(--cor-branco);
           padding: 100px 0;
           text-align: center;
@@ -109,18 +116,18 @@ export default function Home() {
         }
 
         .hero h1 span {
-          color: var(--cor-azul-aqua);
+          color: var(--cor-laranja);
         }
 
         .hero p {
           font-size: 1.25rem;
-          max-width: 700px;
+          max-width: 800px;
           margin: 0 auto 40px auto;
-          color: #8debfc;
+          color: var(--cor-slate-100);
         }
 
         /* =========================================
-           SEÇÃO: NOSSA HISTÓRIA E FUTURO
+           SEÇÃO: NOSSA HISTÓRIA
            ========================================= */
         .historia {
           padding: 80px 0;
@@ -142,7 +149,7 @@ export default function Home() {
         .section-title {
           font-size: 2rem;
           margin-bottom: 24px;
-          color: var(--cor-grafite);
+          color: var(--cor-slate-900);
           position: relative;
           padding-bottom: 10px;
         }
@@ -154,14 +161,14 @@ export default function Home() {
           left: 0;
           width: 60px;
           height: 4px;
-          background-color: var(--cor-azul-aqua);
+          background-color: var(--cor-laranja); /* Detalhe laranja nos títulos */
           border-radius: 2px;
         }
 
         .historia-texto p {
           margin-bottom: 16px;
           font-size: 1.1rem;
-          color: #1d1d1d;
+          color: var(--cor-slate-700);
         }
 
         /* =========================================
@@ -169,7 +176,7 @@ export default function Home() {
            ========================================= */
         .valores {
           padding: 80px 0;
-          background-color: var(--cor-fundo);
+          background-color: var(--cor-slate-50);
         }
 
         .valores-grid {
@@ -184,17 +191,18 @@ export default function Home() {
           padding: 32px 24px;
           border-radius: 8px;
           text-align: center;
-          box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-          border-bottom: 4px solid var(--cor-azul-aqua);
-          transition: transform 0.3s ease;
+          box-shadow: 0 4px 6px rgba(2, 6, 23, 0.05);
+          border-bottom: 4px solid var(--cor-laranja);
+          transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
         .card-valor:hover {
           transform: translateY(-5px);
+          box-shadow: 0 10px 15px rgba(2, 6, 23, 0.1);
         }
 
         .card-valor h3 {
-          color: var(--cor-grafite);
+          color: var(--cor-slate-800);
           font-size: 1.25rem;
           margin-bottom: 8px;
         }
@@ -203,7 +211,7 @@ export default function Home() {
            RODAPÉ
            ========================================= */
         footer {
-          background-color: var(--cor-grafite);
+          background-color: var(--cor-slate-950);
           color: var(--cor-branco);
           text-align: center;
           padding: 40px 0;
@@ -212,18 +220,17 @@ export default function Home() {
         footer p {
           opacity: 0.7;
           font-size: 0.9rem;
+          color: var(--cor-slate-100);
         }
       `}} />
 
       {/* CABEÇALHO */}
       <header>
         <div className="container header-content">
-          <a href="#" className="logo">
+          <Link href="/" className="logo">
             Trans<span>Bus</span>
-          </a>
-          <a>
+          </Link>
           <Link href="/login" className="btn-login">Login</Link>
-          </a>
         </div>
       </header>
 
@@ -234,14 +241,7 @@ export default function Home() {
         <section className="hero">
           <div className="container">
             <h1>Mais controle para sua <span>Frota de Ônibus</span></h1>
-            <p>Centralize informações, gerencie motoristas e otimize rotas em uma única plataforma confiável e segura.</p>
-            <a 
-              href="#login" 
-              className="btn-login" 
-              style={{ padding: '16px 32px', fontSize: '1.1rem' }}
-            >
-              Acessar TransBus
-            </a>
+            <p>Centralize informações, gerencie e otimize em uma única plataforma confiável e segura.</p>
           </div>
         </section>
 
@@ -249,14 +249,14 @@ export default function Home() {
         <section className="historia">
           <div className="container historia-grid">
             <div className="historia-texto">
-              <h2 className="section-title">Como Nascemos</h2>
-              <p>O TransBus nasceu da necessidade de criar uma forma mais organizada e eficiente de gerenciar uma frota de ônibus responsável pelo transporte de passageiros entre terminais e bairros.</p>
-              <p>A ideia surgiu ao perceber que, para uma operação funcionar corretamente, é necessário controlar diversas informações, como a disponibilidade dos ônibus, a situação dos motoristas e a organização das viagens.</p>
+              <h2 className="section-title">Quem Somos</h2>
+              <p>O TransBus é um sistema criado para tornar a gestão de frotas de ônibus mais organizada e eficiente. A plataforma centraliza informações sobre veículos, motoristas e viagens, facilitando o controle da operação e contribuindo para um transporte de passageiros mais eficiente.</p>
+              <p>Nosso objetivo é oferecer uma solução que simplifique a rotina de gestão, facilite a tomada de decisões e contribua para um transporte de passageiros mais eficiente.</p>
             </div>
             <div className="historia-texto">
-              <h2 className="section-title">Nossa Missão & Futuro</h2>
+              <h2 className="section-title">Nossa Missão</h2>
               <p>A principal motivação do sistema é centralizar essas informações em uma única plataforma, facilitando o gerenciamento da frota e auxiliando na organização das operações.</p>
-              <p>No futuro, buscamos evoluir para uma solução cada vez mais completa. O objetivo final é entregar ao cliente mais controle sobre ônibus, motoristas e viagens, contribuindo para melhores decisões e uma operação mais eficiente.</p>
+              <p>No futuro, buscamos evoluir para uma solução cada vez mais completa. O objetivo final é entregar ao cliente mais controle sobre ônibus, motoristas e viagens, contribuindo para melhores decisões e uma operação mais qualificada.</p>
             </div>
           </div>
         </section>
@@ -269,10 +269,10 @@ export default function Home() {
             </h2>
             <div className="valores-grid">
               <div className="card-valor">
-                <h3>Eficiência</h3>
+                <h3>Organização</h3>
               </div>
               <div className="card-valor">
-                <h3>Organização</h3>
+                <h3>Eficiência</h3>
               </div>
               <div className="card-valor">
                 <h3>Confiabilidade</h3>
@@ -281,7 +281,7 @@ export default function Home() {
                 <h3>Segurança</h3>
               </div>
               <div className="card-valor">
-                <h3>Evolução</h3>
+                <h3>Desempenho</h3>
               </div>
             </div>
           </div>
@@ -292,8 +292,8 @@ export default function Home() {
       {/* RODAPÉ */}
       <footer>
         <div className="container">
-          <h2 style={{ marginBottom: '16px' }}>
-            Trans<span style={{ color: 'var(--cor-azul-aqua)' }}>Bus</span>
+          <h2 style={{ marginBottom: '16px', fontSize: '24px', fontWeight: '800' }}>
+            Trans<span style={{ color: 'var(--cor-laranja)' }}>Bus</span>
           </h2>
           <p>&copy; 2026 TransBus Gestão de Frota. Todos os direitos reservados.</p>
         </div>

@@ -22,7 +22,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang="pt-BR"
       className="h-full">
-      <body>{children}</body>
+       <body className="min-h-full">
+        {children}
+      </body>
     </html>
   );
 }
