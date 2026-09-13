@@ -1,15 +1,32 @@
 'use client'
 
+import axios from "axios";
 import { useRouter } from "next/navigation";
+import { LoginResponse } from "../types/auth";
+import { catchError } from "next/error";
 
 
 export default function Login(){
     const router = useRouter();
-    const handleLogin = async(formData: FormData) => {
+    const handleLogin = async(formData: FormData) =>{
+        try {
+            debugger;
+            const emailTela = formData.get("email")?.toString() ?? "";
+            const senhaTela = formData.get("senha")?.toString() ?? "";
 
-        router.push("/home")
-    
-    
+            // Faz a requisição para o backend para autenticar o usuário - Await para aguardar a resposta da requisição
+            var loginResposta = await axios.post<LoginResponse>("http://localhost:8080/auth/login", 
+            {email:emailTela,senha:senhaTela});
+
+
+            if(loginResposta.status==200){
+                router.push("/home")
+            }else{
+                alert("Login ou senha Invalido!")
+            }
+        } catch (error) {
+            alert("Login ou senha Invalido!")
+        }
     }
 
     return (
@@ -29,6 +46,7 @@ export default function Login(){
                         </label>
                         <input
                             name="email"
+                            type="email"
                             className="w-full px-4 py-3 border border-slate-300 rounded-lg bg-slate-50 text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-colors"
                         > 
                         </input>
@@ -39,6 +57,7 @@ export default function Login(){
                         </label>
                         <input
                             name="senha"
+                            type="password"
                             className="w-full px-4 py-3 border border-slate-300 rounded-lg bg-slate-50 text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-colors"
                         >
                         </input>
