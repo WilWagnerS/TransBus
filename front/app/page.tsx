@@ -4,10 +4,11 @@ export default function Home() {
   return (
     <>
       {/* INJEÇÃO DO CSS NO PRÓPRIO ARQUIVO */}
-      <style dangerouslySetInnerHTML={{ __html: `
+      <style dangerouslySetInnerHTML={{
+        __html: `
         /* =========================================
-           VARIÁVEIS DE COR E ESTILO BASE
-           ========================================= */
+            VARIÁVEIS DE COR E ESTILO BASE
+            ========================================= */
         :root {
           /* Paleta Azul Marinho (Baseado no Tailwind Slate) */
           --cor-slate-950: #020617; /* Fundo escuro intenso (Rodapé e Hero) */
@@ -50,14 +51,20 @@ export default function Home() {
         }
 
         /* =========================================
-           CABEÇALHO E NAVEGAÇÃO
-           ========================================= */
+            CABEÇALHO E NAVEGAÇÃO
+            ========================================= */
         header {
           background-color: var(--cor-branco);
           box-shadow: 0 2px 10px rgba(2, 6, 23, 0.08); /* Sombra suave baseada no slate */
           position: sticky;
           top: 0;
           z-index: 100;
+          width: 100%;
+        }
+
+        .header-container {
+          width: 100%;
+          padding: 0 24px;
         }
 
         .header-content {
@@ -67,18 +74,18 @@ export default function Home() {
           height: 80px;
         }
 
-        .logo {
-          font-size: 30px;
-          font-weight: 800;
-          color: var(--cor-slate-950);
-          text-decoration: none;
+        .logo-link {
           display: flex;
           align-items: center;
-          gap: 1px;
+          text-decoration: none;
         }
 
-        .logo span {
-          color: var(--cor-laranja);
+        .logo-img {
+          height: 40px; /* Altura do logo no header */
+          width: auto;
+          max-width: 200px;
+          object-fit: contain;
+          display: block;
         }
 
         .btn-login {
@@ -99,8 +106,8 @@ export default function Home() {
         }
 
         /* =========================================
-           HERO SECTION (Destaque Principal)
-           ========================================= */
+            HERO SECTION (Destaque Principal)
+            ========================================= */
         .hero {
           /* Gradiente moderno usando os tons slate mais escuros */
           background: linear-gradient(135deg, var(--cor-slate-950) 0%, var(--cor-slate-900) 100%);
@@ -127,8 +134,8 @@ export default function Home() {
         }
 
         /* =========================================
-           SEÇÃO: NOSSA HISTÓRIA
-           ========================================= */
+            SEÇÃO: NOSSA HISTÓRIA
+            ========================================= */
         .historia {
           padding: 80px 0;
           background-color: var(--cor-branco);
@@ -172,8 +179,8 @@ export default function Home() {
         }
 
         /* =========================================
-           SEÇÃO: NOSSOS VALORES
-           ========================================= */
+            SEÇÃO: NOSSOS VALORES
+            ========================================= */
         .valores {
           padding: 80px 0;
           background-color: var(--cor-slate-50);
@@ -208,8 +215,8 @@ export default function Home() {
         }
 
         /* =========================================
-           RODAPÉ
-           ========================================= */
+            RODAPÉ
+            ========================================= */
         footer {
           background-color: var(--cor-slate-950);
           color: var(--cor-branco);
@@ -226,9 +233,14 @@ export default function Home() {
 
       {/* CABEÇALHO */}
       <header>
-        <div className="container header-content">
-          <Link href="/" className="logo">
-            Trans<span>Bus</span>
+        <div className="header-container header-content">
+          <Link href="/" className="logo-link">
+            {/* SUBSTITUIÇÃO DO TEXTO PELO LOGO SVG APENAS AQUI NO CABEÇALHO */}
+            <img
+              src="/transbus-logo.svg"
+              alt="TransBus Logo"
+              className="logo-img"
+            />
           </Link>
           <Link href="/login" className="btn-login">Login</Link>
         </div>
@@ -236,7 +248,7 @@ export default function Home() {
 
       {/* CONTEÚDO PRINCIPAL */}
       <main>
-        
+
         {/* HERO SECTION */}
         <section className="hero">
           <div className="container">
@@ -250,7 +262,7 @@ export default function Home() {
           <div className="container historia-grid">
             <div className="historia-texto">
               <h2 className="section-title">Quem Somos</h2>
-              <p>O TransBus é um sistema criado para tornar a gestão de frotas de ônibus mais organizada e eficiente. A plataforma centraliza informações sobre veículos, motoristas e viagens, facilitando o controle da operação e contribuindo para um transporte de passageiros mais eficiente.</p>
+              <p>O TransBus é um sistema criado para tornar a gestão de frotas de ônibus mais organizada e eficiente. A plataforma centraliza informações sobre veículos, motoristas e viagens, facilitando o controle da operation e contribuindo para um transporte de passageiros mais eficiente.</p>
               <p>Nosso objetivo é oferecer uma solução que simplifique a rotina de gestão, facilite a tomada de decisões e contribua para um transporte de passageiros mais eficiente.</p>
             </div>
             <div className="historia-texto">

@@ -3,7 +3,6 @@
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { LoginResponse } from "../types/auth";
-import { catchError } from "next/error";
 
 
 export default function Login(){
