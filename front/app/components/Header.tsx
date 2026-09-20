@@ -1,6 +1,19 @@
+"use client"
+
 import Link from "next/link";
+import { useRouter } from "next/navigation"; // 1. Importado o hook useRouter do Next.js
 
 export default function Header() {
+
+    // 2. Instanciado o roteador para permitir o redirecionamento
+    const router = useRouter();
+
+    // 3. Criada a função que limpa a sessão e redireciona para o login
+    const handleLogout = () => {
+        localStorage.removeItem("token"); // Remove o token de autenticação, se houver
+        router.push("/login"); // Redireciona para a raiz (página de login)
+    };
+
     return (
         <header className="w-full bg-white border-b border-slate-200 shadow-sm sticky top-0 z-40 px-6 py-4">
             {/* Removido max-w-7xl e mx-auto para expandir de ponta a ponta */}
@@ -35,6 +48,7 @@ export default function Header() {
 
                     <button
                         type="button"
+                        onClick={handleLogout} // 4. Adicionado o evento onClick chamando a função criada
                         className="px-4 py-2 bg-slate-100 hover:bg-orange-500 text-slate-700 hover:text-white font-medium text-sm rounded-lg border border-slate-300 hover:border-orange-500 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:ring-offset-white"
                     >
                         Sair
