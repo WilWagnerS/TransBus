@@ -30,11 +30,7 @@ export default function Motoristas() {
 
 
     }
-
-
-
-
-
+    
     return (
 
         <div className="min-h-screen bg-gradient-to-r from-[#020617] to-[#0d2872] p-6 md:p-10 space-y-8">

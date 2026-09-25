@@ -8,11 +8,15 @@ export class Usuario {
 
         public cpf: string,
 
+        public status: string,
+
         public email: string,
 
-        public status: string
+        public senha: string,
 
-    ) { }
+    ) {}
+}
 
-
+export interface UsuarioFormProps{
+    usuarioExistente?:Usuario
 }

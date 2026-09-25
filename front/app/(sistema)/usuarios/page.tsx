@@ -19,7 +19,47 @@ export default function Usuarios() {
         } catch (error) {
             alert("Erro ao carregar dados do servidor!");
         }
-    };
+    }
+
+    const handleDeletarusuario = async (usuario: Usuario) => {
+
+        var dadosRetorno = await axios.delete('http://localhost:8080/usuarios/' + usuario.id + '/excluir');
+
+        if (dadosRetorno.status == 200) {
+            alert("Excluido com sucesso!");
+
+        } else {
+            alert(dadosRetorno.data);
+
+            return;
+        }
+
+        carregarDados();
+
+    }
+
+    const handleAlterarStatusUsuario = async (usuario: Usuario) => {
+
+        var novoStatus = {};
+        if (usuario.status === "ATIVO") {
+            novoStatus = { status: "BLOQUEADO" }
+        } else {
+            novoStatus = { status: "ATIVO" }
+        }
+        var dadosRetorno = await axios.patch('http://localhost:8080/usuarios/' + usuario.id + '/status', novoStatus);
+
+        if (dadosRetorno.status == 200) {
+            alert("Atualizado com sucesso!");
+
+        } else {
+            alert(dadosRetorno.data);
+
+            return
+        }
+
+        carregarDados();
+
+    }
 
     return (
         <div className="w-full min-h-screen bg-gradient-to-r from-[#020617] to-[#0d2872] p-6 md:p-10 space-y-8">
@@ -79,8 +119,7 @@ export default function Usuarios() {
                                     </td>
                                     {/* Botão de editar estilizado. */}
                                     <td className="px-6 py-4 text-sm font-medium text-right">
-                                        <Link
-                                            href={`/usuarios/${usuario.id}/editar`}
+                                        <Link href={`/usuarios/${usuario.id}/editar`}
                                             className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-300 hover:text-orange-500 bg-slate-800/80 hover:bg-slate-800 border border-slate-700/60 hover:border-orange-500/50 rounded-lg transition-all duration-200 shadow-sm group"
                                         >
                                             <svg
@@ -99,6 +138,56 @@ export default function Usuarios() {
                                             </svg>
                                             <span>Editar</span>
                                         </Link>
+                                        {/* Botão de deletar estilizado. */}
+                                        <button
+                                            type="button"
+                                            onClick={() => handleDeletarusuario(usuario)}
+                                            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-orange-600 hover:text-orange-800 bg-slate-800/80 hover:bg-slate-800 border border-slate-700/60 hover:border-orange-500/50 rounded-lg transition-all duration-200 shadow-sm group"
+                                        >
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                fill="none"
+                                                viewBox="0 0 24 24"
+                                                strokeWidth="1.8"
+                                                stroke="currentColor"
+                                                className="w-3.5 h-3.5 text-orange-600 group-hover:text-orange-800 transition-colors"
+                                            >
+                                                <path
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"
+                                                />
+                                            </svg>
+                                            <span>Deletar</span>
+                                        </button>
+                                        {/* Botão de alterar status estilizado com cores dinâmicas. */}
+                                        <button
+                                            type="button"
+                                            onClick={() => handleAlterarStatusUsuario(usuario)}
+                                            className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-slate-800/80 hover:bg-slate-800 border border-slate-700/60 rounded-lg transition-all duration-200 shadow-sm group ${usuario.status === 'BLOQUEADO'
+                                                ? 'text-orange-500 hover:text-orange-400 hover:border-orange-500/50'
+                                                : 'text-green-500 hover:text-green-400 hover:border-green-500/50'
+                                                }`}
+                                        >
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                fill="none"
+                                                viewBox="0 0 24 24"
+                                                strokeWidth="1.8"
+                                                stroke="currentColor"
+                                                className={`w-3.5 h-3.5 transition-colors ${usuario.status === 'BLOQUEADO'
+                                                    ? 'text-orange-500 group-hover:text-orange-400'
+                                                    : 'text-green-500 group-hover:text-green-400'
+                                                    }`}
+                                            >
+                                                <path
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99"
+                                                />
+                                            </svg>
+                                            <span>{usuario.status}</span>
+                                        </button>
                                     </td>
                                 </tr>
                             ))}
@@ -114,6 +203,6 @@ export default function Usuarios() {
                     </table>
                 </div>
             </div>
-        </div>
+        </div >
     );
 }
