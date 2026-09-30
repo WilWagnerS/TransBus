@@ -164,7 +164,7 @@ export default function ViagemForm({ viagemExistente }: ViagemFormProps) {
                             className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2.5 text-slate-100 focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition-colors"
                         >
                             <option value="">Selecione o motorista</option>
-                            {motoristas.filter((motorista) => motorista.status === "EM_EXPEDIENTE").map((motorista) => (
+                            {motoristas.filter((motorista) => motorista.status === "EM_EXPEDIENTE" || motorista.id === viagem.motorista?.id).map((motorista) => (
                                 <option key={motorista.id} value={motorista.id!}>
                                     ID {motorista.id} - {motorista.nome}
                                 </option>
@@ -185,7 +185,7 @@ export default function ViagemForm({ viagemExistente }: ViagemFormProps) {
                             className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2.5 text-slate-100 focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition-colors"
                         >
                             <option value="">Selecione o ônibus</option>
-                            {onibusList.filter((onibus) => onibus.status === "GARAGEM").map((onibus) => (
+                            {onibusList.filter((onibus) => onibus.status === "GARAGEM" || onibus.id === viagem.onibus?.id).map((onibus) => (
                                 <option key={onibus.id} value={onibus.id!}>
                                     ID {onibus.id} - {onibus.placa} ({onibus.modelo})
                                 </option>

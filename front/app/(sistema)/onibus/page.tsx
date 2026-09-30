@@ -227,9 +227,14 @@ export default function Onibuss() {
                                             <button
                                                 type="button"
                                                 onClick={() => handleAlterarStatusOnibus(onibus)}
-                                                className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-slate-800/80 hover:bg-slate-800 border border-slate-700/60 rounded-lg transition-all duration-200 shadow-sm group ${onibus.status === 'AVARIADO'
-                                                    ? 'text-orange-500 hover:text-orange-400 hover:border-orange-500/50'
-                                                    : 'text-green-500 hover:text-green-400 hover:border-green-500/50'
+                                                className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg transition-all duration-200 shadow-sm group 
+                                                    ${onibus.status === 'AVARIADO'
+                                                        ? 'text-white bg-red-600 hover:bg-red-700 border border-red-500 shadow-md shadow-red-900/30'
+                                                        : onibus.status === 'EXCLUIDO'
+                                                            ? 'bg-slate-800/80 hover:bg-slate-800 border border-slate-700/60 text-orange-600 hover:text-orange-800 hover:border-orange-500/50'
+                                                            : onibus.status === 'EM_SERVICO'
+                                                                ? 'bg-slate-800/80 hover:bg-slate-800 border border-purple-500/60 text-purple-500 hover:text-purple-400 hover:border-purple-400'
+                                                                : 'bg-slate-800/80 hover:bg-slate-800 border border-slate-700/60 text-green-500 hover:text-green-400 hover:border-green-500/50'
                                                     }`}
                                             >
                                                 <svg
@@ -238,9 +243,14 @@ export default function Onibuss() {
                                                     viewBox="0 0 24 24"
                                                     strokeWidth="1.8"
                                                     stroke="currentColor"
-                                                    className={`w-3.5 h-3.5 transition-colors ${onibus.status === 'AVARIADO'
-                                                        ? 'text-orange-500 group-hover:text-orange-400'
-                                                        : 'text-green-500 group-hover:text-green-400'
+                                                    className={`w-3.5 h-3.5 transition-colors 
+                                                        ${onibus.status === 'AVARIADO'
+                                                            ? 'text-white'
+                                                            : onibus.status === 'EXCLUIDO'
+                                                                ? 'text-orange-600 group-hover:text-orange-800'
+                                                                : onibus.status === 'EM_SERVICO'
+                                                                    ? 'text-purple-500 group-hover:text-purple-400'
+                                                                    : 'text-green-500 group-hover:text-green-400'
                                                         }`}
                                                 >
                                                     <path

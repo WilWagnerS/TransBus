@@ -58,11 +58,16 @@ export default function Viagens() {
 
         } else if (viagem.status === "EM_ANDAMENTO") {
             novoStatus = { statusViagem: "CONCLUIDA" }
-             await axios.patch('http://localhost:8080/motoristas/' + viagem.motorista?.id + '/status', { statusMotorista: "EM_EXPEDIENTE" })
-               await axios.patch('http://localhost:8080/onibus/' + viagem.onibus?.id + '/status', { statusOnibus: "GARAGEM" });
+            await axios.patch('http://localhost:8080/motoristas/' + viagem.motorista?.id + '/status', { statusMotorista: "EM_EXPEDIENTE" })
+            await axios.patch('http://localhost:8080/onibus/' + viagem.onibus?.id + '/status', { statusOnibus: "GARAGEM" });
         } else {
             novoStatus = { statusViagem: "AGENDADA" }
         }
+
+        //} else {
+        //    alert("Esta viagem não pode ter o status alterado.");
+        //    return;
+        //}
 
         var dadosRetorno = await axios.patch('http://localhost:8080/viagem/' + viagem.id + '/status', novoStatus);
 
@@ -229,7 +234,7 @@ export default function Viagens() {
                                                 <button
                                                     type="button"
                                                     onClick={() => handleReportarProblema(viagem)}
-                                                    className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium bg-slate-800/80 hover:bg-slate-800 border border-slate-700/60 hover:border-red-500/50 rounded-lg transition-all duration-200 shadow-sm text-red-500 hover:text-red-400 group"
+                                                    className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium bg-slate-800/80 hover:bg-slate-800 border border-slate-700/60 hover:border-orange-500/50 rounded-lg transition-all duration-200 shadow-sm text-orange-600 hover:text-orange-800 group"
                                                 >
                                                     <svg
                                                         xmlns="http://www.w3.org/2000/svg"
@@ -237,7 +242,7 @@ export default function Viagens() {
                                                         viewBox="0 0 24 24"
                                                         strokeWidth="1.8"
                                                         stroke="currentColor"
-                                                        className="w-3.5 h-3.5 text-red-500 group-hover:text-red-400 transition-colors"
+                                                        className="w-3.5 h-3.5 text-orange-600 group-hover:text-orange-800 transition-colors"
                                                     >
                                                         <path
                                                             strokeLinecap="round"
@@ -253,13 +258,16 @@ export default function Viagens() {
                                             <button
                                                 type="button"
                                                 onClick={() => handleAlterarStatusViagem(viagem)}
-                                                className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium bg-slate-800/80 hover:bg-slate-800 border rounded-lg transition-all duration-200 shadow-sm group ${viagem.status === 'COM_PROBLEMA'
-                                                    ? 'text-red-500 hover:text-red-400 border-red-500/40 hover:border-red-500/60'
-                                                    : viagem.status === 'AGENDADA'
-                                                        ? 'text-yellow-500 hover:text-yellow-400 border-yellow-500/40 hover:border-yellow-500/60'
-                                                        : viagem.status === 'EM_ANDAMENTO'
-                                                            ? 'text-purple-500 hover:text-purple-400 border-purple-500/40 hover:border-purple-500/60'
-                                                            : 'text-green-500 hover:text-green-400 border-green-500/40 hover:border-green-500/60'
+                                                className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs border rounded-lg transition-all duration-200 shadow-sm group ${viagem.status === 'COM_PROBLEMA'
+                                                    ? 'font-semibold text-white bg-red-600 hover:bg-red-700 active:bg-red-800 border-red-500 shadow-md shadow-red-900/30'
+                                                    : `font-medium bg-slate-800/80 hover:bg-slate-800 ${viagem.status === 'CANCELADA' || viagem.status === 'EXCLUIDO'
+                                                        ? 'text-orange-600 hover:text-orange-800 border-slate-700/60 hover:border-orange-500/50'
+                                                        : viagem.status === 'AGENDADA'
+                                                            ? 'text-yellow-500 hover:text-yellow-400 border-yellow-500/40 hover:border-yellow-500/60'
+                                                            : viagem.status === 'EM_ANDAMENTO'
+                                                                ? 'text-purple-500 hover:text-purple-400 border-purple-500/40 hover:border-purple-500/60'
+                                                                : 'text-green-500 hover:text-green-400 border-green-500/40 hover:border-green-500/60'
+                                                    }`
                                                     }`}
                                             >
                                                 <svg
@@ -268,13 +276,16 @@ export default function Viagens() {
                                                     viewBox="0 0 24 24"
                                                     strokeWidth="1.8"
                                                     stroke="currentColor"
-                                                    className={`w-3.5 h-3.5 transition-colors ${viagem.status === 'COM_PROBLEMA'
-                                                        ? 'text-red-500 group-hover:text-red-400'
-                                                        : viagem.status === 'AGENDADA'
-                                                            ? 'text-yellow-500 group-hover:text-yellow-400'
-                                                            : viagem.status === 'EM_ANDAMENTO'
-                                                                ? 'text-purple-500 group-hover:text-purple-400'
-                                                                : 'text-green-500 group-hover:text-green-400'
+                                                    className={`w-3.5 h-3.5 transition-colors 
+                                                        ${viagem.status === 'CANCELADA' || viagem.status === 'EXCLUIDO'
+                                                            ? 'text-orange-600 group-hover:text-orange-800'
+                                                            : viagem.status === 'COM_PROBLEMA'
+                                                                ? 'text-white'
+                                                                : viagem.status === 'AGENDADA'
+                                                                    ? 'text-yellow-500 group-hover:text-yellow-400'
+                                                                    : viagem.status === 'EM_ANDAMENTO'
+                                                                        ? 'text-purple-500 group-hover:text-purple-400'
+                                                                        : 'text-green-500 group-hover:text-green-400'
                                                         }`}
                                                 >
                                                     <path
@@ -301,6 +312,6 @@ export default function Viagens() {
                     </table>
                 </div>
             </div>
-        </div>
+        </div >
     );
 }

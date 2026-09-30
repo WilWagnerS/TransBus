@@ -37,14 +37,32 @@ export default function Motoristas() {
         carregarDados();
     }
 
+    const handleReativarMotorista = async (motorista: Motorista) => {
+
+        var dadosRetorno = await axios.patch('http://localhost:8080/motoristas/' + motorista.id + '/status', { statusMotorista: "EM_EXPEDIENTE" });
+
+        if (dadosRetorno.status == 200) {
+            alert("Motorista reativado com sucesso!");
+        } else {
+            alert(dadosRetorno.data);
+
+            return;
+        }
+
+        carregarDados();
+    }
+
 
     const handleAlterarStatusMotorista = async (motoristas: Motorista) => {
 
         var novoStatus = {};
         if (motoristas.status === "EM_EXPEDIENTE") {
-            novoStatus = { statusMotorista: "EXCLUIDO" }
+            novoStatus = { statusMotorista: "DIRIGINDO" };
+        } else if (motoristas.status === "DIRIGINDO") {
+            novoStatus = { statusMotorista: "EM_EXPEDIENTE" };
         } else {
-            novoStatus = { statusMotorista: "EM_EXPEDIENTE" }
+            alert("Este motorista não pode ter o status alterado.");
+            return;
         }
         var dadosRetorno = await axios.patch('http://localhost:8080/motoristas/' + motoristas.id + '/status', novoStatus);
 
@@ -148,35 +166,64 @@ export default function Motoristas() {
                                                 </svg>
                                                 <span>Editar</span>
                                             </Link>
-                                            {/* Botão de deletar estilizado. */}
-                                            <button
-                                                type="button"
-                                                onClick={() => handleDeletarMotorista(motorista)}
-                                                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-orange-600 hover:text-orange-800 bg-slate-800/80 hover:bg-slate-800 border border-slate-700/60 hover:border-orange-500/50 rounded-lg transition-all duration-200 shadow-sm group"
-                                            >
-                                                <svg
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    fill="none"
-                                                    viewBox="0 0 24 24"
-                                                    strokeWidth="1.8"
-                                                    stroke="currentColor"
-                                                    className="w-3.5 h-3.5 text-orange-600 group-hover:text-orange-800 transition-colors"
+                                            {/* Botão de deletar / reativar estilizado. */}
+                                            {motorista.status === "EXCLUIDO" ? (
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleReativarMotorista(motorista)}
+                                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-cyan-400 hover:text-cyan-300 bg-slate-800/80 hover:bg-slate-800 border border-cyan-500/40 hover:border-cyan-500/70 rounded-lg transition-all duration-200 shadow-sm group"
                                                 >
-                                                    <path
-                                                        strokeLinecap="round"
-                                                        strokeLinejoin="round"
-                                                        d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"
-                                                    />
-                                                </svg>
-                                                <span>Deletar</span>
-                                            </button>
+                                                    <svg
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        fill="none"
+                                                        viewBox="0 0 24 24"
+                                                        strokeWidth="1.8"
+                                                        stroke="currentColor"
+                                                        className="w-3.5 h-3.5 text-cyan-400 group-hover:text-cyan-300 transition-colors"
+                                                    >
+                                                        <path
+                                                            strokeLinecap="round"
+                                                            strokeLinejoin="round"
+                                                            d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"
+                                                        />
+                                                    </svg>
+                                                    <span>Reativar</span>
+                                                </button>
+                                            ) : (
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleDeletarMotorista(motorista)}
+                                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-orange-600 hover:text-orange-800 bg-slate-800/80 hover:bg-slate-800 border border-slate-700/60 hover:border-orange-500/50 rounded-lg transition-all duration-200 shadow-sm group"
+                                                >
+                                                    <svg
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        fill="none"
+                                                        viewBox="0 0 24 24"
+                                                        strokeWidth="1.8"
+                                                        stroke="currentColor"
+                                                        className="w-3.5 h-3.5 text-orange-600 group-hover:text-orange-800 transition-colors"
+                                                    >
+                                                        <path
+                                                            strokeLinecap="round"
+                                                            strokeLinejoin="round"
+                                                            d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"
+                                                        />
+                                                    </svg>
+                                                    <span>Deletar</span>
+                                                </button>
+                                            )}
                                             {/* Botão de alterar status estilizado com cores dinâmicas. */}
                                             <button
                                                 type="button"
                                                 onClick={() => handleAlterarStatusMotorista(motorista)}
-                                                className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-slate-800/80 hover:bg-slate-800 border border-slate-700/60 rounded-lg transition-all duration-200 shadow-sm group ${motorista.status === 'BLOQUEADO'
-                                                    ? 'text-orange-500 hover:text-orange-400 hover:border-orange-500/50'
-                                                    : 'text-green-500 hover:text-green-400 hover:border-green-500/50'
+                                                className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg transition-all duration-200 shadow-sm group 
+                                                    ${motorista.status === 'INDISPONIVEL'
+                                                        ? 'text-white bg-red-600 hover:bg-red-700 border border-red-500 shadow-md shadow-red-900/30'
+                                                        : motorista.status === 'EXCLUIDO'
+                                                            ? 'bg-slate-800/80 hover:bg-slate-800 border border-slate-700/60 text-orange-600 hover:text-orange-800 hover:border-orange-500/50'
+                                                            : motorista.status === 'DIRIGINDO'
+                                                                ? 'bg-slate-800/80 hover:bg-slate-800 border border-purple-500/60 text-purple-500 hover:text-purple-400 hover:border-purple-400'
+                                                                : 'bg-slate-800/80 hover:bg-slate-800 border border-slate-700/60 text-green-500 hover:text-green-400 hover:border-green-500/50'
                                                     }`}
                                             >
                                                 <svg
@@ -185,9 +232,14 @@ export default function Motoristas() {
                                                     viewBox="0 0 24 24"
                                                     strokeWidth="1.8"
                                                     stroke="currentColor"
-                                                    className={`w-3.5 h-3.5 transition-colors ${motorista.status === 'BLOQUEADO' //verificar aqui!!!!!!!!!!!!!!
-                                                        ? 'text-orange-500 group-hover:text-orange-400'
-                                                        : 'text-green-500 group-hover:text-green-400'
+                                                    className={`w-3.5 h-3.5 transition-colors 
+                                                        ${motorista.status === 'INDISPONIVEL'
+                                                            ? 'text-white'
+                                                            : motorista.status === 'EXCLUIDO'
+                                                                ? 'text-orange-600 group-hover:text-orange-800'
+                                                                : motorista.status === 'DIRIGINDO'
+                                                                    ? 'text-purple-500 group-hover:text-purple-400'
+                                                                    : 'text-green-500 group-hover:text-green-400'
                                                         }`}
                                                 >
                                                     <path
@@ -216,6 +268,6 @@ export default function Motoristas() {
                     </table>
                 </div>
             </div>
-        </div>
+        </div >
     )
 }
