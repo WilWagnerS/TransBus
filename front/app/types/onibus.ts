@@ -12,7 +12,9 @@ export class Onibus {
 
         public status: string
 
-    ) { }
+    ) {}
+}
 
-
+export interface OnibusFormProps{
+    onibusExistente?:Onibus | null
 }

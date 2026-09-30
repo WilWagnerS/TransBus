@@ -1,6 +1,6 @@
 package com.example.transbus.controllers;
 
-import com.example.transbus.DTOs.AtualizarStatusRequest;
+import com.example.transbus.DTOs.AtualizarStatusMotoristaRequest;
 import com.example.transbus.entities.EnumStatusMotorista;
 import com.example.transbus.entities.Motorista;
 import com.example.transbus.repository.MotoristaRepository;
@@ -52,7 +52,7 @@ public class MotoristaController {
 
     @PatchMapping("/{id}/status")
     @Operation(summary = "Método responsável pela alteração do status do motorista!")
-    public ResponseEntity<Void> atualizarStatus(@PathVariable Long id, @RequestBody AtualizarStatusRequest statusRequest){
+    public ResponseEntity<Void> atualizarStatus(@PathVariable Long id, @RequestBody AtualizarStatusMotoristaRequest statusRequest){
 
         //motoristaBanco pra entender que é o motorista que veio do banco.
         Motorista motoristaBanco = motoristaRepository.findById(id).orElse(null);

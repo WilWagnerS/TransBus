@@ -1,6 +1,6 @@
 package com.example.transbus.controllers;
 
-import com.example.transbus.DTOs.AtualizarStatusRequest;
+import com.example.transbus.DTOs.AtualizarStatusViagemRequest;
 import com.example.transbus.entities.EnumStatusMotorista;
 import com.example.transbus.entities.EnumStatusOnibus;
 import com.example.transbus.entities.EnumStatusViagem;
@@ -56,7 +56,7 @@ public class ViagemController {
     public ResponseEntity<Viagem> criar(@RequestBody Viagem viagem){
 
         var motoristaBanco = motoristaRepository.
-                findById(viagem.getMotorista().getId()).orElse(null);
+                findById(viagem.getMotoristaId()).orElse(null);
 
         if(motoristaBanco == null){
             return ResponseEntity.notFound().build();
@@ -70,7 +70,7 @@ public class ViagemController {
 
 
         var onibusBanco = onibusRepository
-                .findById(viagem.getOnibus().getId()).orElse(null);
+                .findById(viagem.getOnibusId()).orElse(null);
 
         if(onibusBanco == null){
             return ResponseEntity.notFound().build();
@@ -89,7 +89,7 @@ public class ViagemController {
 
     @PatchMapping("/{id}/status")
     @Operation(summary = "Método responsável pela alteração do status da viagem!")
-    public ResponseEntity<Void> atualizarStatus(@PathVariable Long id, @RequestBody AtualizarStatusRequest statusRequest){
+    public ResponseEntity<Void> atualizarStatus(@PathVariable Long id, @RequestBody AtualizarStatusViagemRequest statusRequest){
 
         //viagemBanco pra entender que é a viagem que veio do banco.
         Viagem viagemBanco =  viagemRepository.findById(id).orElse(null);

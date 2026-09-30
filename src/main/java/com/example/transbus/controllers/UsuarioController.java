@@ -1,7 +1,7 @@
 package com.example.transbus.controllers;
 
 import com.example.transbus.DTOs.AlterarSenhaRequest;
-import com.example.transbus.DTOs.AtualizarStatusRequest;
+import com.example.transbus.DTOs.AtualizarStatusUsuarioRequest;
 import com.example.transbus.entities.EnumStatusUsuario;
 import com.example.transbus.entities.Usuario;
 import com.example.transbus.repository.UsuarioRepository;
@@ -56,7 +56,7 @@ public class UsuarioController {
 
     @PatchMapping("/{id}/status")
     @Operation(summary = "Método responsável pela alteração do status do usuário!")
-    public ResponseEntity<Void> atualizarStatus(@PathVariable Long id, @RequestBody AtualizarStatusRequest statusRequest){
+    public ResponseEntity<Void> atualizarStatus(@PathVariable Long id, @RequestBody AtualizarStatusUsuarioRequest statusRequest){
 
         //usuarioBanco pra entender que é o usuario que veio do banco.
         Usuario usuarioBanco = usuarioRepository.findById(id).orElse(null);

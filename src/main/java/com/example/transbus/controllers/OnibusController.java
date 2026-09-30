@@ -1,6 +1,6 @@
 package com.example.transbus.controllers;
 
-import com.example.transbus.DTOs.AtualizarStatusRequest;
+import com.example.transbus.DTOs.AtualizarStatusOnibusRequest;
 import com.example.transbus.entities.EnumStatusOnibus;
 import com.example.transbus.entities.Onibus;
 import com.example.transbus.repository.OnibusRepository;
@@ -52,7 +52,7 @@ public class OnibusController {
 
     @PatchMapping("/{id}/status")
     @Operation(summary = "Método responsável pela alteração do status do ônibus!")
-    public ResponseEntity<Void> atualizarStatus(@PathVariable Long id, @RequestBody AtualizarStatusRequest statusRequest){
+    public ResponseEntity<Void> atualizarStatus(@PathVariable Long id, @RequestBody AtualizarStatusOnibusRequest statusRequest){
 
         //onibusBanco pra entender que é o onibus que veio do banco.
         Onibus onibusBanco = onibusRepository.findById(id).orElse(null);

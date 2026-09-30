@@ -8,11 +8,11 @@ export class Usuario {
 
         public cpf: string,
 
-        public status: string,
-
         public email: string,
 
         public senha: string,
+
+        public status: string
 
     ) {}
 }

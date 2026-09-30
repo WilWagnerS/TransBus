@@ -12,7 +12,7 @@ export default function UsuarioForm({ usuarioExistente }: UsuarioFormProps) {
 
     // comentar
     const [usuario, setUsuario] = useState<Usuario>
-        (usuarioExistente || new Usuario(null, "", "", "ATIVO", "", ""));
+        (usuarioExistente || new Usuario(null, "", "", "", "", "ATIVO"));
 
     // Change significa alteração de algo // Campos sempre por na ordem que esta desde la do backend.
     const handlerChange = (campo: 'nome' | 'cpf' | 'email' | 'senha', valor: string) => {
@@ -21,19 +21,18 @@ export default function UsuarioForm({ usuarioExistente }: UsuarioFormProps) {
                 valorAnterior.id,
                 campo === 'nome' ? valor : valorAnterior.nome,
                 campo === 'cpf' ? valor : valorAnterior.cpf,
-                valorAnterior.status,
                 campo === 'email' ? valor : valorAnterior.email,
-                campo === 'senha' ? valor : valorAnterior.senha
+                campo === 'senha' ? valor : valorAnterior.senha,
+                valorAnterior.status,
             )
         )
-
     }
 
 
     const handlerSalvar = async (formData: FormData) => {
 
         if (usuarioExistente) {
-            var dadosRetorno = await axios.put<number>('http://localhost:8080/usuarios'+usuario.id, usuario); //aqui chama a API do usuario e aplica o valor que foi recebido.
+            var dadosRetorno = await axios.put<number>('http://localhost:8080/usuarios/'+usuario.id, usuario); //aqui chama a API do usuario e aplica o valor que foi recebido.
 
             if (dadosRetorno.status == 200) {
                 alert("Usuario foi salvo com sucesso!");
@@ -101,7 +100,7 @@ export default function UsuarioForm({ usuarioExistente }: UsuarioFormProps) {
                         required
                         onChange={(e) => handlerChange('email', e.target.value)}
                         type="email"
-                        placeholder="usuario@transbus.com"
+                        placeholder="usuario@gmail.com"
                         className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2.5 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition-colors"
                     />
                 </div>
@@ -135,9 +134,6 @@ export default function UsuarioForm({ usuarioExistente }: UsuarioFormProps) {
                     </button>
                 </div>
             </div>
-
         </form>
-
-
     );
 }

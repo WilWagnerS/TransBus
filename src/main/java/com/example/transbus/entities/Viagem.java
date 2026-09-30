@@ -36,4 +36,10 @@ public class Viagem {
     @JoinColumn(name = "onibus_id")
     private Onibus onibus;
 
+    @Transient
+    private Long motoristaId;
+
+    @Transient
+    private Long onibusId;
+
 }

@@ -1,3 +1,6 @@
+import { Motorista } from "./motorista";
+import { Onibus } from "./onibus";
+
 export class Viagem {
 
     constructor(
@@ -18,6 +21,13 @@ export class Viagem {
 
         public status: string
 
-    ) { }
+    ) {}
 
+    public motorista?: Motorista;
+
+    public onibus?: Onibus;
+}
+
+export interface ViagemFormProps{
+    viagemExistente?:Viagem
 }

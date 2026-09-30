@@ -1,12 +1,41 @@
 "use client"
 
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import ViagemForm from "../../components/ViagemForm";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { Viagem } from "@/app/types/viagem";
+
 
 export default function EditarViagem() {
+
     const parametro = useParams();
     const codigo = Number(parametro.codigo);
+
+    const [viagem, setViagem] = useState<Viagem | null>(null)
+
+    const router = useRouter();
+    useEffect(() => {
+
+        buscarDados();
+
+    }, []);
+
+    const buscarDados = async () => {
+
+        const valorViagemBack = await axios.get<Viagem>('http://localhost:8080/viagem/' + codigo);
+
+        if (valorViagemBack.status == 200) {
+            setViagem(valorViagemBack.data);
+        } else {
+
+            router.push("/viagem")
+        }
+    }
+
+    // Se a viagem nao existir, ele dará um outro retorno (retorno ambiguo.)
+    if (!viagem) return (<div className="p-8"> Carregando dados...</div>)
 
     return (
         <div className="w-full min-h-screen p-6 md:p-10 space-y-6">
@@ -41,7 +70,7 @@ export default function EditarViagem() {
             </div>
 
             <div className="max-w-2xl mx-auto">
-                <ViagemForm />
+                <ViagemForm viagemExistente={viagem} />
             </div>
         </div>
     );

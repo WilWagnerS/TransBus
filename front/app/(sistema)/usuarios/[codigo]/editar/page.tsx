@@ -26,14 +26,14 @@ export default function EditarUsuario() {
 
         if (valorUsuarioBack.status == 200) {
             setUsuario(valorUsuarioBack.data);
-        }else{
+        } else {
 
-        router.push("/usuarios")}
-
+            router.push("/usuarios")
+        }
     }
 
     // Se o usuario nao existir, ele dará um outro retorno (retorno ambiguo.)
-    if(!usuario) return(<div className="p-8"> Carregando dados...</div>)
+    if (!usuario) return (<div className="p-8"> Carregando dados...</div>)
 
 
     return (
@@ -72,7 +72,7 @@ export default function EditarUsuario() {
 
             {/* Formulário centralizado */}
             <div className="max-w-2xl mx-auto">
-                <UsuarioForm usuarioExistente={usuario}/>
+                <UsuarioForm usuarioExistente={usuario} />
             </div>
         </div>
     );

@@ -1,12 +1,40 @@
 "use client"
 
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import OnibusForm from "../../components/OnibusForm";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { Onibus } from "@/app/types/onibus";
 
 export default function EditarOnibus() {
     const parametro = useParams();
     const codigo = Number(parametro.codigo);
+
+    const [onibus, setOnibus] = useState<Onibus | null>(null)
+
+    const router = useRouter();
+    useEffect(() => {
+
+        buscarDados();
+
+    }, []);
+
+    const buscarDados = async () => {
+
+        const valorOnibusBack = await axios.get<Onibus>('http://localhost:8080/onibus/' + codigo);
+
+        if (valorOnibusBack.status == 200) {
+            setOnibus(valorOnibusBack.data);
+        } else {
+
+            router.push("/onibus")
+        }
+    }
+
+      // Se o usuario nao existir, ele dará um outro retorno (retorno ambiguo.)
+    if (!onibus) return (<div className="p-8"> Carregando dados...</div>)
+
 
     return (
         <div className="w-full min-h-screen p-6 md:p-10 space-y-6">
@@ -44,7 +72,7 @@ export default function EditarOnibus() {
 
             {/* Formulário centralizado */}
             <div className="max-w-2xl mx-auto">
-                <OnibusForm />
+                <OnibusForm onibusExistente={onibus} />
             </div>
         </div>
     );

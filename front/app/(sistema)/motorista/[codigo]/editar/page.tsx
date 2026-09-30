@@ -1,12 +1,42 @@
 "use client"
 
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import MotoristaForm from "../../components/MotoristaForm";
+import { useEffect, useState } from "react";
+import { Motorista } from "@/app/types/motorista";
+import axios from "axios";
 
 export default function EditarMotorista() {
     const parametro = useParams();
     const codigo = Number(parametro.codigo);
+
+    const [motorista, setMotorista] = useState<Motorista | null>(null);
+
+    const router = useRouter();
+
+    useEffect(() => {
+
+        buscarDados();
+
+    }, []);
+
+    const buscarDados = async () => {
+
+        const valorMotoristaBack = await axios.get<Motorista>('http://localhost:8080/motoristas/' + codigo);
+
+        if (valorMotoristaBack.status == 200) {
+            setMotorista(valorMotoristaBack.data);
+        } else {
+
+            router.push("/motorista");
+        }
+
+    }
+
+    // Se o motorista não existir, ele dará um outro retorno (retorno ambíguo).
+    if (!motorista) return (<div className="p-8"> Carregando dados... </div>);
+
 
     return (
         <div className="w-full min-h-screen p-6 md:p-10 space-y-6">
@@ -44,7 +74,7 @@ export default function EditarMotorista() {
 
             {/* Formulário centralizado */}
             <div className="max-w-2xl mx-auto">
-                <MotoristaForm />
+                <MotoristaForm motoristaExistente={motorista} />
             </div>
         </div>
     );

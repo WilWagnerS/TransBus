@@ -12,5 +12,9 @@ export class Motorista {
 
         public status: string
 
-    ) { }
+    ) {}
 }  
+
+export interface MotoristaFormProps{
+    motoristaExistente?:Motorista
+}
