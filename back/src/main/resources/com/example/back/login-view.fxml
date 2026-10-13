@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="200.0" prefWidth="300.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/17.0.12" fx:controller="com.example.back.LoginController">
+   <children>
+    <Label fx:id="welcomeText" layoutX="56.0" layoutY="77.0" prefHeight="18.0" prefWidth="28.0" text="Key:" />
+    <Button layoutX="109.0" layoutY="111.0" onAction="#onLoginButtonClick" prefHeight="26.0" prefWidth="81.0" text="Login" />
+      <TextField fx:id="txtKey" layoutX="94.0" layoutY="74.0" />
+   </children>
+</AnchorPane>
