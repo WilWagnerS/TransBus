@@ -1,0 +1,34 @@
+package com.example.transbus.presentation;
+
+import com.example.transbus.application.DTOs.LoginRequest;
+import com.example.transbus.application.services.UsuarioService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+
+@RestController
+@RequestMapping("/auth")
+@Tag(description = "Controller de autenticação!", name = "Autenticação")
+public class AuthController {
+
+    @Autowired
+    private UsuarioService usuarioService;
+
+    @PostMapping("/login")
+    @Operation(description = "login", summary = "Autenticação de usuarios")
+    public ResponseEntity<?> login(@RequestBody LoginRequest Request) {
+
+        var resultadoAutenticaoToken = usuarioService.validarUsuarioAltenticacaoRetornaToken(Request);
+
+        if (resultadoAutenticaoToken !=null) {
+            return ResponseEntity.ok(resultadoAutenticaoToken);
+        }
+        return ResponseEntity.badRequest().body("Usuário ou senha Invalido!");
+    }
+}

@@ -3,6 +3,12 @@
 import Link from "next/link";
 import ViagemForm from "../components/ViagemForm";
 
+// A pasta "novo" representa uma rota dentro da aplicação.
+// O arquivo "page.tsx" é reconhecido pelo Next.js como a página dessa rota.
+// O componente "CadastroViagem" é responsável por montar a tela de cadastro de uma nova viagem.
+// A estrutura "app/viagem/novo/page.tsx" corresponde à URL "/viagem/novo".
+// Quando o usuário acessa "/viagem/novo", o Next.js carrega esse "page.tsx".
+// O nome "CadastroViagem" é o nome do componente React, enquanto "novo" é o nome da rota.
 
 export default function CadastroViagem() {
     return (

@@ -303,6 +303,7 @@ export default function Viagens() {
 
                             {viagens.length === 0 && (
                                 <tr>
+                                    {/*Define uma célula da tabela que ocupa 9 colunas.*/}
                                     <td colSpan={9} className="px-6 py-12 text-center font-medium text-slate-300">
                                         Nenhuma viagem encontrada.
                                     </td>
