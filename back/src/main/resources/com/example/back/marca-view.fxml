@@ -5,13 +5,13 @@
 
 <AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.back.MarcaController">
    <children>
-      <Button layoutX="528.0" layoutY="351.0" mnemonicParsing="false" text="Salvar" />
-      <Button layoutX="29.0" layoutY="26.0" mnemonicParsing="false" text="Voltar" />
+      <Button layoutX="528.0" layoutY="351.0" mnemonicParsing="false" onAction="#salvarMarca" text="Salvar" />
+      <Button layoutX="29.0" layoutY="26.0" mnemonicParsing="false" onAction="#voltar" text="Voltar" />
       <Label layoutX="204.0" layoutY="152.0" text="Nome:" />
-      <TextField layoutX="247.0" layoutY="148.0" />
+      <TextField fx:id="txtNome" layoutX="247.0" layoutY="148.0" />
       <Label layoutX="204.0" layoutY="190.0" prefWidth="33.0" text="Tipo:" />
       <Label layoutX="204.0" layoutY="230.0" prefWidth="33.0" text="Ano:" />
-      <TextField layoutX="247.0" layoutY="186.0" />
-      <TextField layoutX="247.0" layoutY="226.0" />
+      <TextField fx:id="txtTipo" layoutX="247.0" layoutY="186.0" />
+      <TextField fx:id="txtAno" layoutX="247.0" layoutY="226.0" />
    </children>
 </AnchorPane>

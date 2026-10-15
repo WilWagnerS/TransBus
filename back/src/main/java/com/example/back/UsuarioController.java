@@ -38,7 +38,8 @@ public class UsuarioController {
                         "  \"senha\": \"%s\",\n" +
                         "  \"cpf\": \"%s\",\n" +
                         "  \"secretKey\": \"%s\"\n" +
-                        "}", txtNome.getText(),
+                        "}",
+                txtNome.getText(),
                 txtEmail.getText(),
                 txtSenha.getText(),
                 txtCPF.getText(),

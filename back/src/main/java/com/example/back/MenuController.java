@@ -6,7 +6,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-
 import java.io.IOException;
 
 public class MenuController {
@@ -23,8 +22,17 @@ public class MenuController {
     }
 
     @FXML
-    public void sair(){
+    public void criarMarca(ActionEvent event) throws IOException{
+        FXMLLoader loader =
+                new FXMLLoader(getClass().getResource("/com/example/back/marca-view.fxml"));
 
+        Scene scene = new Scene(loader.load());
+        Stage stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
+        stage.setScene(scene);
+    }
+
+    @FXML
+    public void sair(){
         System.exit(0);
     }
 }
