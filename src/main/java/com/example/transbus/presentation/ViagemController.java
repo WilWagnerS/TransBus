@@ -1,6 +1,9 @@
 package com.example.transbus.presentation;
 
 import com.example.transbus.application.DTOs.AtualizarStatusViagemRequest;
+import com.example.transbus.application.DTOs.EnumStatusMotorista;
+import com.example.transbus.application.DTOs.EnumStatusOnibus;
+import com.example.transbus.application.DTOs.EnumStatusViagem;
 import com.example.transbus.domain.entities.*;
 import com.example.transbus.domain.repository.MotoristaRepository;
 import com.example.transbus.domain.repository.OnibusRepository;

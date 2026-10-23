@@ -4,7 +4,12 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
-import com.auth0.jwt.interfaces.DecodedJWT;
+import com.example.transbus.domain.entities.Token;
+import com.example.transbus.application.DTOs.LoginRequest;
+import com.example.transbus.application.DTOs.UsuarioLogado;
+import com.example.transbus.domain.repository.TokenRepository;
+import com.example.transbus.domain.repository.UsuarioRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -24,26 +29,43 @@ public class TokenService {
     @Value("${spring.emissor}")
     private String emissor;
 
-    public String gerarToken(String subject){
+    @Autowired
+    private UsuarioRepository usuarioRepository;
 
-        try{
-            Algorithm algorithm = Algorithm.HMAC256(secret);
-            String token = com.auth0.jwt.JWT.create()
-                    .withIssuer(emissor)
-                    .withSubject(subject)
-                    .withExpiresAt(getDataExpiracao())
-                    .sign(algorithm);
-            return token;
+    @Autowired
+    private TokenRepository tokenRepository;
 
-        }catch (RuntimeException e){
-            throw new RuntimeException(e);
-        }
+    public String gerarToken(LoginRequest loginResquestDto){
+
+        Algorithm algorithm = Algorithm.HMAC256(secret);
+
+        var usuario = usuarioRepository.findAll()
+                .stream().filter( u-> u.getEmail().equals(loginResquestDto.email()))
+                .findFirst().orElse(null);
+
+        String token = JWT.create()
+                .withIssuer(emissor)
+                .withSubject(loginResquestDto.email())
+                .withExpiresAt(getDataExpiracao())
+                .sign(algorithm);
+
+        tokenRepository.save(new Token(token, usuario));
+
+        return token;
     }
 
-    public DecodedJWT verificarToken(String token) throws JWTVerificationException {
+    public UsuarioLogado verificarToken(String token) throws JWTVerificationException {
         Algorithm algorithm = Algorithm.HMAC256(secret);
+
         JWTVerifier verificador = JWT.require(algorithm).withIssuer(emissor).build();
-        return verificador.verify(token);
+
+        verificador.verify(token);
+
+        var tokenBanco = tokenRepository.findTokenByToken(token).orElse(null);
+        if(tokenBanco==null){
+            throw  new IllegalArgumentException("Token Invalido!");
+        }
+        return new UsuarioLogado(tokenBanco.getUsuario());
 
     }
 

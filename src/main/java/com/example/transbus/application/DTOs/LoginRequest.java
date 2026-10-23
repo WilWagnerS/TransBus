@@ -1,7 +1,5 @@
 package com.example.transbus.application.DTOs;
 
-public record LoginRequest(
+public record LoginRequest(String email, String senha){
 
-        String email,
-        String senha){
 }

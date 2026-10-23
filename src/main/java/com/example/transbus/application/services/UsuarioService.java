@@ -3,13 +3,12 @@ package com.example.transbus.application.services;
 import com.example.transbus.application.DTOs.*;
 import com.example.transbus.domain.entities.Usuario;
 import com.example.transbus.domain.repository.UsuarioRepository;
+import com.example.transbus.domain.valueobject.CPF;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
-import java.net.HttpURLConnection;
 import java.util.List;
 
 @Service
@@ -24,32 +23,83 @@ public class UsuarioService {
     @Value("${spring.secret}")
     private String secret;
 
-    public LoginResponse validarUsuarioAltenticacaoRetornaToken(LoginRequest request) {
 
-        if(usuarioRepository.existsUsuarioByEmailAndSenha(request.email(), request.senha())){
+    public LoginResponse validarUsuarioAutenticadoRetornaToken(LoginRequest resquest) {
+        if (usuarioRepository.existsUsuarioByEmailAndSenha(resquest.email(), resquest.senha())){
+            var token = tokenService.gerarToken(resquest);
 
-            var token = tokenService.gerarToken(request.email());
             return new LoginResponse(token);
         }
+
         return null;
     }
 
     public List<UsuarioResponse> listarTodosUsuariosTable(){
 
-        return usuarioRepository.findAll()
+        return  usuarioRepository.findAll()
                 .stream()
                 .map(UsuarioResponse::new)
                 .toList();
     }
 
     public CriarAdminResponse criarAdmin(CriarAdminRequest criarAdminRequest) {
-
         if(!criarAdminRequest.secretKey().equals(secret)){
-            return new CriarAdminResponse(0L, "Usuario Salvo com sucesso!");
+            return new CriarAdminResponse(0L,"Usuario Salvo com sucesso!");
+
         }
         Usuario usuarioAdminSalvar = new Usuario(criarAdminRequest);
         usuarioRepository.save(usuarioAdminSalvar);
 
-        return new CriarAdminResponse(usuarioAdminSalvar.getId(), "Usuario salvo com sucesso!");
+        return new CriarAdminResponse(usuarioAdminSalvar.getId(),"Usuario Salvo com sucesso!");
+    }
+
+    public UsuarioLogado getUsuarioLogado(){
+        return (UsuarioLogado) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    }
+
+    public UsuarioResponse salvarUsuario(UsuarioRequest usuario, Long id) {
+
+        var usuarioLogado = getUsuarioLogado();
+        //Novo Usuario
+        if(id == 0L) {
+            Usuario usuarioBanco = new Usuario(usuario);
+            usuarioRepository.save(usuarioBanco);
+
+            return new UsuarioResponse(usuarioBanco);
+        }else {
+            //Usuario existente
+            Usuario usuarioBanco = usuarioRepository.findById(id).orElse(null);
+            if(usuarioBanco!= null ){
+                usuarioBanco.setNome(usuario.nome());
+                usuarioBanco.setCpf(new CPF(usuario.cpf()));
+                usuarioBanco.setEmail(usuario.email());
+                usuarioBanco.setSenha(usuario.senha());
+                usuarioBanco.setEmpresa_id(usuarioLogado.empresa_id());
+                usuarioRepository.save(usuarioBanco);
+
+                return  new UsuarioResponse(usuarioBanco);
+            }
+        }
+        return null;
+    }
+
+    public UsuarioResponse buscarPorId(Long id) {
+        var usuario = usuarioRepository.findById(id).orElse(null);
+        if(usuario == null){
+            return null;
+        }
+
+        return new UsuarioResponse(usuario);
+    }
+
+    public boolean atualizarStatus(EnumStatusUsuario status,Long id) {
+        Usuario usuarioBanco = usuarioRepository.findById(id).orElse(null);
+        if(usuarioBanco!= null ){
+            usuarioBanco.setStatus(status);
+            usuarioRepository.save(usuarioBanco);
+
+            return  true;
+        }
+        return false;
     }
 }

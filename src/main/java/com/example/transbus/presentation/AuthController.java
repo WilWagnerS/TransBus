@@ -14,21 +14,20 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/auth")
-@Tag(description = "Controller de autenticação!", name = "Autenticação")
+@Tag(name = "Autenticação controller",description = "Controller responsavel pela autencicação da aplicação!")
 public class AuthController {
 
     @Autowired
     private UsuarioService usuarioService;
 
     @PostMapping("/login")
-    @Operation(description = "login", summary = "Autenticação de usuarios")
-    public ResponseEntity<?> login(@RequestBody LoginRequest Request) {
-
-        var resultadoAutenticaoToken = usuarioService.validarUsuarioAltenticacaoRetornaToken(Request);
-
-        if (resultadoAutenticaoToken !=null) {
-            return ResponseEntity.ok(resultadoAutenticaoToken);
+    @Operation(summary = "Login", description = "Método responsavel por efetuar o login do usuário!")
+    public ResponseEntity<?> login(@RequestBody LoginRequest resquest) {
+        var resultadoAutenticacaoRetornoToken = usuarioService.validarUsuarioAutenticadoRetornaToken(resquest);
+        if (resultadoAutenticacaoRetornoToken != null) {
+            return ResponseEntity.ok(resultadoAutenticacaoRetornoToken);
         }
+
         return ResponseEntity.badRequest().body("Usuário ou senha Invalido!");
     }
 }

@@ -1,4 +1,4 @@
-package com.example.transbus.domain.entities;
+package com.example.transbus.application.DTOs;
 
 public enum EnumStatusMotorista {
     FORA_DE_SERVICO, //Fora do horario de trabalho.

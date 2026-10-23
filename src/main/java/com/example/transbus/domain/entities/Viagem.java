@@ -1,5 +1,6 @@
 package com.example.transbus.domain.entities;
 
+import com.example.transbus.application.DTOs.EnumStatusViagem;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;

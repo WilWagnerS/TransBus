@@ -1,4 +1,4 @@
-package com.example.transbus.domain.entities;
+package com.example.transbus.application.DTOs;
 
 public enum EnumStatusViagem {
     AGENDADA, //Viagem criada e aguardando início.

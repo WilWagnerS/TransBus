@@ -1,7 +1,7 @@
 package com.example.transbus.presentation;
 
 import com.example.transbus.application.DTOs.AtualizarStatusMotoristaRequest;
-import com.example.transbus.domain.entities.EnumStatusMotorista;
+import com.example.transbus.application.DTOs.EnumStatusMotorista;
 import com.example.transbus.domain.entities.Motorista;
 import com.example.transbus.domain.repository.MotoristaRepository;
 import io.swagger.v3.oas.annotations.Operation;
