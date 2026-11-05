@@ -1,73 +1,40 @@
 "use client"
 
+import { atualizarStatusUsuario, buscarListaUsuarios, deletarUsuario } from "@/app/services/usuarioService";
 import { Usuario } from "@/app/types/usuario";
-import axios from "axios";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
 
 export default function Usuarios() {
     const [usuarios, setUsuarios] = useState<Usuario[]>([]);
-
     useEffect(() => {
         carregarDados();
     }, []);
 
     const carregarDados = async () => {
         try {
-            const dados = await axios.get<Usuario[]>("http://localhost:8080/usuarios");
-            setUsuarios(dados.data);
+            const dados = await buscarListaUsuarios();
+            setUsuarios(dados);
         } catch (error) {
             alert("Erro ao carregar dados do servidor!");
         }
     }
 
     const handleDeletarUsuario = async (usuario: Usuario) => {
-
-        var dadosRetorno = await axios.delete('http://localhost:8080/usuarios/' + usuario.id + '/excluir');
-
-        if (dadosRetorno.status == 200) {
+        var dadosRetorno = await deletarUsuario(usuario.id|| 0);
+        if (dadosRetorno == 200) {
             alert("Excluido com sucesso!");
-
         } else {
-            alert(dadosRetorno.data);
-
+            alert("Erro ao excluir usuário!");
             return;
         }
-
         carregarDados();
-
     }
 
     const handleAlterarStatusUsuario = async (usuario: Usuario) => {
-
-        var novoStatus = {};
-        if (usuario.status === "ATIVO") {
-            novoStatus = { statusUsuario: "BLOQUEADO" }
-        } else {
-            novoStatus = { statusUsuario: "ATIVO" }
-        }
-        var dadosRetorno = await axios.patch('http://localhost:8080/usuarios/' + usuario.id + '/status', novoStatus);
-
-        if (dadosRetorno.status == 200) {
-            alert("Atualizado com sucesso!");
-
-        } else {
-            alert(dadosRetorno.data);
-
-            return
-        }
-
+        await atualizarStatusUsuario(usuario);
         carregarDados();
-
-    }
-
-    const formatarCPF = (cpf: string) => {
-        return cpf
-            .replace(/\D/g, "")
-            .replace(/(\d{3})(\d)/, "$1.$2")
-            .replace(/(\d{3})(\d)/, "$1.$2")
-            .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
     }
 
     return (
@@ -83,7 +50,6 @@ export default function Usuarios() {
                     Cadastrar usuário
                 </Link>
             </div>
-
             <div className="bg-slate-900 border border-slate-800 rounded-xl shadow-xl overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse">
@@ -119,7 +85,7 @@ export default function Usuarios() {
                                         {usuario.nome}
                                     </td>
                                     <td className="px-6 py-4 text-sm font-medium text-center text-slate-100">
-                                        {formatarCPF(usuario.cpf)}
+                                        {usuario.cpf}
                                     </td>
                                     <td className="px-6 py-4 text-sm font-medium text-center text-slate-100">
                                         {usuario.email}
@@ -127,7 +93,6 @@ export default function Usuarios() {
                                     <td className="px-6 py-4 text-sm font-medium text-center text-slate-100">
                                         {usuario.status}
                                     </td>
-                                    {/* Botão de editar estilizado. */}
                                     <td className="px-6 py-4 text-sm font-medium">
                                         <div className="flex items-center justify-end gap-2">
                                             <Link href={`/usuarios/${usuario.id}/editar`}
@@ -149,7 +114,6 @@ export default function Usuarios() {
                                                 </svg>
                                                 <span>Editar</span>
                                             </Link>
-                                            {/* Botão de deletar estilizado. */}
                                             {(usuario.status !== "EXCLUIDO") && (
                                                 <button
                                                     type="button"
@@ -173,8 +137,6 @@ export default function Usuarios() {
                                                     <span>Deletar</span>
                                                 </button>
                                             )}
-
-                                            {/* Botão de alterar status estilizado com cores dinâmicas. */}
                                             <button
                                                 type="button"
                                                 onClick={() => handleAlterarStatusUsuario(usuario)}
@@ -212,7 +174,6 @@ export default function Usuarios() {
                                     </td>
                                 </tr>
                             ))}
-
                             {usuarios.length === 0 && (
                                 <tr>
                                     <td colSpan={6} className="px-6 py-12 text-center font-medium text-slate-400">

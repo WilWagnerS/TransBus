@@ -25,7 +25,7 @@ public class UsuarioService {
 
 
     public LoginResponse validarUsuarioAutenticadoRetornaToken(LoginRequest resquest) {
-        if (usuarioRepository.existsUsuarioByEmailAndSenha(resquest.email(), resquest.senha())){
+        if (usuarioRepository.existsUsuarioByEmailAndSenha(resquest.email(), resquest.senha())) {
             var token = tokenService.gerarToken(resquest);
 
             return new LoginResponse(token);
@@ -34,26 +34,34 @@ public class UsuarioService {
         return null;
     }
 
-    public List<UsuarioResponse> listarTodosUsuariosTable(){
+    public List<UsuarioResponse> listarTodosUsuariosTable() {
 
-        return  usuarioRepository.findAll()
+        var usuariologado = getUsuarioLogado();
+
+        if (usuariologado.empresa_id() == 0L) {
+            return usuarioRepository.findAll()
+                    .stream()
+                    .map(UsuarioResponse::new)
+                    .toList();
+        }
+        return usuarioRepository.getUsuariosByEmpresa_Id(usuariologado.empresa_id())
                 .stream()
                 .map(UsuarioResponse::new)
                 .toList();
     }
 
     public CriarAdminResponse criarAdmin(CriarAdminRequest criarAdminRequest) {
-        if(!criarAdminRequest.secretKey().equals(secret)){
-            return new CriarAdminResponse(0L,"Usuario Salvo com sucesso!");
+        if (!criarAdminRequest.secretKey().equals(secret)) {
+            return new CriarAdminResponse(0L, "Usuario Salvo com sucesso!");
 
         }
         Usuario usuarioAdminSalvar = new Usuario(criarAdminRequest);
         usuarioRepository.save(usuarioAdminSalvar);
 
-        return new CriarAdminResponse(usuarioAdminSalvar.getId(),"Usuario Salvo com sucesso!");
+        return new CriarAdminResponse(usuarioAdminSalvar.getId(), "Usuario Salvo com sucesso!");
     }
 
-    public UsuarioLogado getUsuarioLogado(){
+    public UsuarioLogado getUsuarioLogado() {
         return (UsuarioLogado) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 
@@ -61,23 +69,22 @@ public class UsuarioService {
 
         var usuarioLogado = getUsuarioLogado();
         //Novo Usuario
-        if(id == 0L) {
+        if (id == 0L) {
             Usuario usuarioBanco = new Usuario(usuario);
             usuarioRepository.save(usuarioBanco);
 
             return new UsuarioResponse(usuarioBanco);
-        }else {
+        } else {
             //Usuario existente
             Usuario usuarioBanco = usuarioRepository.findById(id).orElse(null);
-            if(usuarioBanco!= null ){
+            if (usuarioBanco != null) {
                 usuarioBanco.setNome(usuario.nome());
                 usuarioBanco.setCpf(new CPF(usuario.cpf()));
                 usuarioBanco.setEmail(usuario.email());
                 usuarioBanco.setSenha(usuario.senha());
-                usuarioBanco.setEmpresa_id(usuarioLogado.empresa_id());
                 usuarioRepository.save(usuarioBanco);
 
-                return  new UsuarioResponse(usuarioBanco);
+                return new UsuarioResponse(usuarioBanco);
             }
         }
         return null;
@@ -85,21 +92,34 @@ public class UsuarioService {
 
     public UsuarioResponse buscarPorId(Long id) {
         var usuario = usuarioRepository.findById(id).orElse(null);
-        if(usuario == null){
+        if (usuario == null) {
             return null;
         }
 
         return new UsuarioResponse(usuario);
     }
 
-    public boolean atualizarStatus(EnumStatusUsuario status,Long id) {
+    public boolean atualizarStatus(EnumStatusUsuario status, Long id) {
         Usuario usuarioBanco = usuarioRepository.findById(id).orElse(null);
-        if(usuarioBanco!= null ){
+        if (usuarioBanco != null) {
             usuarioBanco.setStatus(status);
             usuarioRepository.save(usuarioBanco);
 
-            return  true;
+            return true;
         }
         return false;
+    }
+
+    public UsuarioResponse BuscarUsuarioLogado() {
+        try {
+            var usuarioLogado = getUsuarioLogado();
+            return usuarioRepository.findById(usuarioLogado.id())
+                    .stream()
+                    .map(UsuarioResponse::new).findFirst().orElse(null);
+
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao buscar usuario logado!");
+
+        }
     }
 }

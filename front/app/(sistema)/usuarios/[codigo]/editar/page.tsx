@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import UsuarioForm from "../../components/UsuarioForm";
 import { useEffect, useState } from "react";
 import { Usuario } from "@/app/types/usuario";
-import axios from "axios";
+import { ConsultaUsuarioPorId } from "@/app/services/usuarioService";
 
 export default function EditarUsuario() {
     const parametro = useParams();
@@ -15,30 +15,21 @@ export default function EditarUsuario() {
 
     const router = useRouter();
     useEffect(() => {
-
         buscarDados();
-
     }, []);
 
     const buscarDados = async () => {
-
-        const valorUsuarioBack = await axios.get<Usuario>('http://localhost:8080/usuarios/' + codigo);
-
-        if (valorUsuarioBack.status == 200) {
-            setUsuario(valorUsuarioBack.data);
+        const valorUsuarioBack = await ConsultaUsuarioPorId(codigo);
+        if (valorUsuarioBack.status) {
+            setUsuario(valorUsuarioBack);
         } else {
-
             router.push("/usuarios")
         }
     }
-
-    // Se o usuario nao existir, ele dará um outro retorno (retorno ambiguo.)
     if (!usuario) return (<div className="p-8"> Carregando dados...</div>)
-
 
     return (
         <div className="w-full min-h-screen p-6 md:p-10 space-y-6">
-            {/* Botão "voltar" fica no canto esquerdo da página */}
             <div>
                 <Link
                     href="/usuarios"
@@ -59,8 +50,6 @@ export default function EditarUsuario() {
                     <span>Voltar para Listagem</span>
                 </Link>
             </div>
-
-            {/* Título e Subtítulo centralizados e alinhados com o formulário */}
             <div className="max-w-2xl mx-auto">
                 <h1 className="text-2xl md:text-3xl font-bold text-white tracking-tight">
                     Usuário cadastrado {codigo}
@@ -69,8 +58,6 @@ export default function EditarUsuario() {
                     Edite os dados do usuário
                 </p>
             </div>
-
-            {/* Formulário centralizado */}
             <div className="max-w-2xl mx-auto">
                 <UsuarioForm usuarioExistente={usuario} />
             </div>

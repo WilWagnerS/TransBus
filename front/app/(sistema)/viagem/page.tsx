@@ -1,7 +1,7 @@
 "use client";
 
+import { atualizarStatusViagem, buscarListaViagens, deletarViagem } from "@/app/services/viagemService";
 import { Viagem } from "@/app/types/viagem";
-import axios from "axios";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
@@ -14,93 +14,26 @@ export default function Viagens() {
 
     const carregarDados = async () => {
         try {
-            const dados = await axios.get<Viagem[]>("http://localhost:8080/viagem");
-            setViagens(dados.data);
+            const dados = await buscarListaViagens();
+            setViagens(dados);
         } catch (error) {
             alert("Erro ao carregar dados do servidor!");
         }
     };
 
-    // Função para formatar a data feia da API de forma enxuta (ex: 31/08/2026 19:30)
-    const formatarData = (dataString?: string) => {
-        if (!dataString) return "-";
-        const data = new Date(dataString);
-        if (isNaN(data.getTime())) return dataString;
-        return data.toLocaleString("pt-BR", {
-            day: "2-digit",
-            month: "2-digit",
-            year: "numeric",
-            hour: "2-digit",
-            minute: "2-digit",
-        });
-    };
-
     const handleCancelarViagem = async (viagem: Viagem) => {
-        var dadosRetorno = await axios.delete('http://localhost:8080/viagem/' + viagem.id + '/cancelar')
-
-        if (dadosRetorno.status == 200) {
+        var dadosRetorno = await deletarViagem(viagem.id|| 0);
+        if (dadosRetorno == 200) {
             alert("Viagem cancelada com sucesso!")
         } else {
-            alert(dadosRetorno.data)
+            alert("Erro ao excluir viagem!");
             return;
         }
-
         carregarDados()
     };
 
     const handleAlterarStatusViagem = async (viagem: Viagem) => {
-        var novoStatus = {}
-
-        if (viagem.status === "AGENDADA") {
-            novoStatus = { statusViagem: "EM_ANDAMENTO" }
-            await axios.patch('http://localhost:8080/motoristas/' + viagem.motorista?.id + '/status', { statusMotorista: "DIRIGINDO" })
-            await axios.patch('http://localhost:8080/onibus/' + viagem.onibus?.id + '/status', { statusOnibus: "EM_SERVICO" });
-
-        } else if (viagem.status === "EM_ANDAMENTO") {
-            novoStatus = { statusViagem: "CONCLUIDA" }
-            await axios.patch('http://localhost:8080/motoristas/' + viagem.motorista?.id + '/status', { statusMotorista: "EM_EXPEDIENTE" })
-            await axios.patch('http://localhost:8080/onibus/' + viagem.onibus?.id + '/status', { statusOnibus: "GARAGEM" });
-        } else {
-            novoStatus = { statusViagem: "AGENDADA" }
-        }
-
-        //} else {
-        //    alert("Esta viagem não pode ter o status alterado.");
-        //    return;
-        //}
-
-        var dadosRetorno = await axios.patch('http://localhost:8080/viagem/' + viagem.id + '/status', novoStatus);
-
-        if (dadosRetorno.status == 200) {
-            alert("Atualizado com sucesso!")
-        } else {
-            alert(dadosRetorno.data)
-            return;
-        }
-
-        carregarDados()
-    };
-
-    const handleReportarProblema = async (viagem: Viagem) => {
-
-        var origemProblema = prompt("O problema foi no: (1) para Motorista, (2) para Onibus, (3) para Ambos");
-
-        if (origemProblema !== "1" && origemProblema !== "2" && origemProblema !== "3") {
-            alert("Opção inválida.");
-            return;
-        }
-
-        await axios.patch('http://localhost:8080/viagem/' + viagem.id + '/status', { statusViagem: "COM_PROBLEMA" });
-
-        if (origemProblema === "1" || origemProblema === "3") {
-            await axios.patch('http://localhost:8080/motoristas/' + viagem.motorista?.id + '/status', { statusMotorista: "INDISPONIVEL" });
-        }
-
-        if (origemProblema === "2" || origemProblema === "3") {
-            await axios.patch('http://localhost:8080/onibus/' + viagem.onibus?.id + '/status', { statusOnibus: "AVARIADO" });
-        }
-
-        alert("Problema reportado!");
+        await atualizarStatusViagem(viagem);
         carregarDados();
     }
 
@@ -117,8 +50,6 @@ export default function Viagens() {
                     Cadastrar Viagem
                 </Link>
             </div>
-
-            {/* Container responsivo da tabela */}
             <div className="bg-slate-900 border border-slate-800 rounded-xl shadow-xl overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse min-w-[900px]">
@@ -166,10 +97,10 @@ export default function Viagens() {
                                         {viagem.destino}
                                     </td>
                                     <td className="px-4 py-3 text-sm font-medium text-center text-slate-100 whitespace-nowrap">
-                                        {formatarData(viagem.horarioInicio)}
+                                        {viagem.horarioInicio}
                                     </td>
                                     <td className="px-4 py-3 text-sm font-medium text-center text-slate-100 whitespace-nowrap">
-                                        {formatarData(viagem.horarioFim)}
+                                        {viagem.horarioFim}
                                     </td>
                                     <td className="px-4 py-3 text-sm font-medium text-center text-slate-100 whitespace-nowrap">
                                         {viagem.motorista?.nome || "-"}
@@ -182,7 +113,6 @@ export default function Viagens() {
                                     </td>
                                     <td className="px-4 py-3 text-sm font-medium whitespace-nowrap text-right">
                                         <div className="flex items-center justify-end gap-2 flex-nowrap">
-                                            {/* Botão de editar */}
                                             <Link
                                                 href={`/viagem/${viagem.id}/editar`}
                                                 className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-slate-300 hover:text-orange-500 bg-slate-800/80 hover:bg-slate-800 border border-slate-700/60 hover:border-orange-500/50 rounded-lg transition-all duration-200 shadow-sm group"
@@ -203,8 +133,6 @@ export default function Viagens() {
                                                 </svg>
                                                 <span>Editar</span>
                                             </Link>
-
-                                            {/* Botão de deletar */}
                                             {(viagem.status === "AGENDADA" || viagem.status === "EM_ANDAMENTO" || viagem.status === "COM_PROBLEMA") && (
                                                 <button
                                                     type="button"
@@ -228,33 +156,6 @@ export default function Viagens() {
                                                     <span>Deletar</span>
                                                 </button>
                                             )}
-
-                                            {/* Botão de reportar problema */}
-                                            {viagem.status === "EM_ANDAMENTO" && (
-                                                <button
-                                                    type="button"
-                                                    onClick={() => handleReportarProblema(viagem)}
-                                                    className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium bg-slate-800/80 hover:bg-slate-800 border border-slate-700/60 hover:border-orange-500/50 rounded-lg transition-all duration-200 shadow-sm text-orange-600 hover:text-orange-800 group"
-                                                >
-                                                    <svg
-                                                        xmlns="http://www.w3.org/2000/svg"
-                                                        fill="none"
-                                                        viewBox="0 0 24 24"
-                                                        strokeWidth="1.8"
-                                                        stroke="currentColor"
-                                                        className="w-3.5 h-3.5 text-orange-600 group-hover:text-orange-800 transition-colors"
-                                                    >
-                                                        <path
-                                                            strokeLinecap="round"
-                                                            strokeLinejoin="round"
-                                                            d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"
-                                                        />
-                                                    </svg>
-                                                    <span>Reportar problema</span>
-                                                </button>
-                                            )}
-
-                                            {/* Botão de alterar status */}
                                             <button
                                                 type="button"
                                                 onClick={() => handleAlterarStatusViagem(viagem)}
@@ -300,10 +201,8 @@ export default function Viagens() {
                                     </td>
                                 </tr>
                             ))}
-
                             {viagens.length === 0 && (
                                 <tr>
-                                    {/*Define uma célula da tabela que ocupa 9 colunas.*/}
                                     <td colSpan={9} className="px-6 py-12 text-center font-medium text-slate-300">
                                         Nenhuma viagem encontrada.
                                     </td>

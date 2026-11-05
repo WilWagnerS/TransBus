@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import MotoristaForm from "../../components/MotoristaForm";
 import { useEffect, useState } from "react";
 import { Motorista } from "@/app/types/motorista";
-import axios from "axios";
+import { ConsultaMotoristaPorId } from "@/app/services/motoristaService";
 
 export default function EditarMotorista() {
     const parametro = useParams();
@@ -14,33 +14,22 @@ export default function EditarMotorista() {
     const [motorista, setMotorista] = useState<Motorista | null>(null);
 
     const router = useRouter();
-
     useEffect(() => {
-
         buscarDados();
-
     }, []);
 
     const buscarDados = async () => {
-
-        const valorMotoristaBack = await axios.get<Motorista>('http://localhost:8080/motoristas/' + codigo);
-
-        if (valorMotoristaBack.status == 200) {
-            setMotorista(valorMotoristaBack.data);
+        const valorMotoristaBack = await ConsultaMotoristaPorId(codigo);
+        if (valorMotoristaBack.status) {
+            setMotorista(valorMotoristaBack);
         } else {
-
             router.push("/motorista");
         }
-
     }
-
-    // Se o motorista não existir, ele dará um outro retorno (retorno ambíguo).
     if (!motorista) return (<div className="p-8"> Carregando dados... </div>);
-
 
     return (
         <div className="w-full min-h-screen p-6 md:p-10 space-y-6">
-            {/* Botão "voltar" fica no canto esquerdo da página */}
             <div>
                 <Link
                     href="/motorista"
@@ -61,8 +50,6 @@ export default function EditarMotorista() {
                     <span>Voltar para Listagem</span>
                 </Link>
             </div>
-
-            {/* Título e Subtítulo centralizados e alinhados com o formulário */}
             <div className="max-w-2xl mx-auto">
                 <h1 className="text-2xl md:text-3xl font-bold text-white tracking-tight">
                     Motorista cadastrado {codigo}
@@ -71,8 +58,6 @@ export default function EditarMotorista() {
                     Edite os dados do motorista
                 </p>
             </div>
-
-            {/* Formulário centralizado */}
             <div className="max-w-2xl mx-auto">
                 <MotoristaForm motoristaExistente={motorista} />
             </div>

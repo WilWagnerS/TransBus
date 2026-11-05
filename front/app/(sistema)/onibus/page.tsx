@@ -1,13 +1,12 @@
 "use client"
+import { atualizarOnibus, buscarListaOnibus, deletarOnibus } from "@/app/services/onibusService";
 import { Onibus } from "@/app/types/onibus";
 import axios from "axios";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
 
-
 export default function Onibuss() {
-
     const [onibus, setOnibus] = useState<Onibus[]>([]);
 
     useEffect(() => {
@@ -15,80 +14,28 @@ export default function Onibuss() {
     }, []);
 
     const carregarDados = async () => {
-
         try {
-            const dados = await axios.get<Onibus[]>("http://localhost:8080/onibus");
-            setOnibus(dados.data);
+            const dados = await buscarListaOnibus();
+            setOnibus(dados);
         } catch (error) {
             alert("Erro ao carregar dados do servidor!")
         }
     }
 
     const handleDeletarOnibus = async (onibus: Onibus) => {
-
-        var dadosRetorno = await axios.delete('http://localhost:8080/onibus/' + onibus.id + '/excluir');
-
-        if (dadosRetorno.status == 200) {
+        var dadosRetorno = await deletarOnibus(onibus.id || 0);
+        if (dadosRetorno == 200) {
             alert("Excluido com sucesso!");
-
         } else {
-            alert(dadosRetorno.data);
-
+            alert("Erro ao excluir o ônibus!");
             return;
         }
-
         carregarDados();
-
-    }
-
-    const handleReativarOnibus = async (onibus: Onibus) => {
-
-        var dadosRetorno = await axios.patch(
-            'http://localhost:8080/onibus/' + onibus.id + '/status',
-            { statusOnibus: "GARAGEM" }
-        );
-
-        if (dadosRetorno.status == 200) {
-            alert("Ônibus reativado com sucesso!");
-
-        } else {
-            alert(dadosRetorno.data);
-
-            return;
-        }
-
-        carregarDados();
-
     }
 
     const handleAlterarStatusOnibus = async (onibus: Onibus) => {
-
-        var novoStatus = {};
-        if (onibus.status === "GARAGEM") {
-            novoStatus = { statusOnibus: "EM_SERVICO" };
-        } else if (onibus.status === "EM_SERVICO") {
-            novoStatus = { statusOnibus: "GARAGEM" };
-        } else if (onibus.status === "AVARIADO") {
-            novoStatus = { statusOnibus: "EM_MANUTENCAO" };
-        } else if (onibus.status === "EM_MANUTENCAO") {
-            novoStatus = { statusOnibus: "GARAGEM" };
-        } else {
-            alert("Este ônibus não pode ter o status alterado.");
-            return;
-        }
-        var dadosRetorno = await axios.patch('http://localhost:8080/onibus/' + onibus.id + '/status', novoStatus);
-
-        if (dadosRetorno.status == 200) {
-            alert("Atualizado com sucesso!");
-
-        } else {
-            alert(dadosRetorno.data);
-
-            return
-        }
-
+        await atualizarOnibus(onibus);
         carregarDados();
-
     }
 
     return (
@@ -104,7 +51,6 @@ export default function Onibuss() {
                     Cadastrar Ônibus
                 </Link>
             </div>
-
             <div className="bg-slate-900 border border-slate-800 rounded-xl shadow-xl overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse">
@@ -130,11 +76,8 @@ export default function Onibuss() {
                                 </th>
                             </tr>
                         </thead>
-
                         <tbody className="divide-y divide-slate-800 text-slate-200">
-
                             {onibus.map((onibus) => (
-
                                 <tr
                                     key={onibus.id}
                                     className="hover:bg-slate-800/40 transition-colors"
@@ -154,7 +97,6 @@ export default function Onibuss() {
                                     <td className="px-6 py-4 text-sm font-medium text-center text-slate-100">
                                         {onibus.status}
                                     </td>
-                                    {/* Botão de editar estilizado. */}
                                     <td className="px-6 py-4 text-sm font-medium">
                                         <div className="flex items-center justify-end gap-2">
                                             <Link
@@ -177,30 +119,7 @@ export default function Onibuss() {
                                                 </svg>
                                                 <span>Editar</span>
                                             </Link>
-                                            {/* Botão de deletar / reativar estilizado. */}
-                                            {onibus.status === "EXCLUIDO" ? (
-                                                <button
-                                                    type="button"
-                                                    onClick={() => handleReativarOnibus(onibus)}
-                                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-cyan-400 hover:text-cyan-300 bg-slate-800/80 hover:bg-slate-800 border border-cyan-500/40 hover:border-cyan-500/70 rounded-lg transition-all duration-200 shadow-sm group"
-                                                >
-                                                    <svg
-                                                        xmlns="http://www.w3.org/2000/svg"
-                                                        fill="none"
-                                                        viewBox="0 0 24 24"
-                                                        strokeWidth="1.8"
-                                                        stroke="currentColor"
-                                                        className="w-3.5 h-3.5 text-cyan-400 group-hover:text-cyan-300 transition-colors"
-                                                    >
-                                                        <path
-                                                            strokeLinecap="round"
-                                                            strokeLinejoin="round"
-                                                            d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"
-                                                        />
-                                                    </svg>
-                                                    <span>Reativar</span>
-                                                </button>
-                                            ) : (
+                                            {(onibus.status === "EXCLUIDO") && (
                                                 <button
                                                     type="button"
                                                     onClick={() => handleDeletarOnibus(onibus)}
@@ -223,7 +142,6 @@ export default function Onibuss() {
                                                     <span>Deletar</span>
                                                 </button>
                                             )}
-                                            {/* Botão de alterar status estilizado com cores dinâmicas. */}
                                             <button
                                                 type="button"
                                                 onClick={() => handleAlterarStatusOnibus(onibus)}
@@ -265,7 +183,6 @@ export default function Onibuss() {
                                     </td>
                                 </tr>
                             ))}
-
                             {onibus.length === 0 && (
                                 <tr>
                                     <td

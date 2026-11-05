@@ -1,5 +1,6 @@
 "use client"
 
+import { atualizarOnibus, salvarOnibus } from "@/app/services/onibusService";
 import { Onibus, OnibusFormProps } from "@/app/types/onibus";
 import axios from "axios";
 import Link from "next/link";
@@ -10,11 +11,9 @@ export default function OnibusForm({ onibusExistente }: OnibusFormProps) {
 
     const router = useRouter();
 
-    // comentar
     const [onibus, setOnibus] = useState<Onibus>
         (onibusExistente || new Onibus(null, "", "", "", "GARAGEM"));
 
-    // Change significa alteração de algo // Campos sempre por na ordem que esta desde la do backend.
     const handlerChange = (campo: 'placa' | 'modelo' | 'capacidade', valor: string) => {
         setOnibus(valorAnterior =>
             new Onibus(
@@ -27,33 +26,24 @@ export default function OnibusForm({ onibusExistente }: OnibusFormProps) {
         )
     }
 
-
     const handlerSalvar = async (formData: FormData) => {
-
         if (onibusExistente) {
-            var dadosRetorno = await axios.put<number>('http://localhost:8080/onibus/' + onibus.id, onibus); //aqui chama a API do onibus e aplica o valor que foi recebido.
-
-            if (dadosRetorno.status == 200) {
+            var dadosRetorno = await atualizarOnibus(onibus);
+            if (dadosRetorno) {
                 alert("Onibus foi salvo com sucesso!");
-
             } else {
-                alert(dadosRetorno.data);
-
-                return //para de executar.
+                alert("Erro ao atualizar Onibus!");
+                return
             }
 
         } else {
-            var dadosRetorno = await axios.post<number>('http://localhost:8080/onibus', onibus); //aqui chama a API do onibus e aplica o valor que foi recebido.
-
-            if (dadosRetorno.status == 200) {
+            var dadosRetorno = await salvarOnibus(onibus);
+            if (dadosRetorno) {
                 alert("Onibus foi salvo com sucesso!");
-
             } else {
-                alert(dadosRetorno.data);
-
-                return //para de executar.
+                alert("Erro ao salvar Onibus!");
+                return
             }
-
         }
         router.push("/onibus");
     }
@@ -61,7 +51,6 @@ export default function OnibusForm({ onibusExistente }: OnibusFormProps) {
     return (
         <form action={handlerSalvar} className="bg-slate-900 border border-slate-800 rounded-xl p-6 md:p-8 max-w-2xl mx-auto shadow-xl">
             <div className="space-y-6">
-                {/* Placa */}
                 <div>
                     <label className="block text-sm font-medium text-slate-300 mb-2">
                         Placa:
@@ -70,13 +59,12 @@ export default function OnibusForm({ onibusExistente }: OnibusFormProps) {
                         name="placa"
                         value={onibus.placa}
                         required
-                        onChange={(e) => handlerChange('placa', e.target.value)} //Comentar
+                        onChange={(e) => handlerChange('placa', e.target.value)}
                         type="text"
                         placeholder="ABC-1234 ou ABC1D23"
                         className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2.5 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition-colors"
                     />
                 </div>
-                {/* Modelo */}
                 <div>
                     <label className="block text-sm font-medium text-slate-300 mb-2">
                         Modelo:
@@ -85,13 +73,12 @@ export default function OnibusForm({ onibusExistente }: OnibusFormProps) {
                         name="modelo"
                         value={onibus.modelo}
                         required
-                        onChange={(e) => handlerChange('modelo', e.target.value)} //Comentar
+                        onChange={(e) => handlerChange('modelo', e.target.value)}
                         type="text"
                         placeholder="Ex: Marcopolo Paradiso 1800 DD"
                         className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2.5 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition-colors"
                     />
                 </div>
-                {/* Capacidade */}
                 <div>
                     <label className="block text-sm font-medium text-slate-300 mb-2">
                         Capacidade (passageiros):
@@ -100,13 +87,12 @@ export default function OnibusForm({ onibusExistente }: OnibusFormProps) {
                         name="capacidade"
                         value={onibus.capacidade}
                         required
-                        onChange={(e) => handlerChange('capacidade', e.target.value)} //Comentar
+                        onChange={(e) => handlerChange('capacidade', e.target.value)}
                         type="number"
                         placeholder="Ex: 44"
                         className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2.5 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition-colors"
                     />
                 </div>
-                {/* Botões de Ação */}
                 <div className="flex items-center justify-end space-x-4 pt-4 border-t border-slate-800">
                     <Link
                         href="/onibus"

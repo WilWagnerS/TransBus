@@ -3,6 +3,7 @@ package com.example.transbus.presentation;
 import com.example.transbus.application.DTOs.*;
 import com.example.transbus.application.services.UsuarioService;
 import com.example.transbus.application.DTOs.EnumStatusUsuario;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,16 +19,16 @@ public class UsuarioController {
     private UsuarioService usuarioService;
 
     @GetMapping
-    public ResponseEntity<List<UsuarioResponse>> listarTodos(){
+    public ResponseEntity<List<UsuarioResponse>> listarTodos() {
 
-        return  ResponseEntity.ok(usuarioService.listarTodosUsuariosTable());
+        return ResponseEntity.ok(usuarioService.listarTodosUsuariosTable());
     }
 
 
     //POSTMAPPING CRIAÇÃO DE ADMIN
     @PostMapping("/admin")
-    public ResponseEntity<CriarAdminResponse> criarAdmin(@RequestBody CriarAdminRequest criarAdminRequest){
-        try{
+    public ResponseEntity<CriarAdminResponse> criarAdmin(@RequestBody CriarAdminRequest criarAdminRequest) {
+        try {
             CriarAdminResponse respostaSalvar = usuarioService.criarAdmin(criarAdminRequest);
 
             return ResponseEntity.ok(respostaSalvar);
@@ -40,26 +41,26 @@ public class UsuarioController {
 
     //GETMAPPING POR ID
     @GetMapping("/{id}")
-    public ResponseEntity<UsuarioResponse> buscarPorId(@PathVariable Long id){
+    public ResponseEntity<UsuarioResponse> buscarPorId(@PathVariable Long id) {
         UsuarioResponse usuarioBanco = usuarioService.buscarPorId(id);
-        if(usuarioBanco!= null ){
+        if (usuarioBanco != null) {
 
-            return  ResponseEntity.ok(usuarioBanco);
+            return ResponseEntity.ok(usuarioBanco);
         }
-        return  ResponseEntity.notFound().build();
+        return ResponseEntity.notFound().build();
     }
 
 
     //POSTMAPPING CRIAÇÃO DE USUARIO
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<?> criar(@RequestBody UsuarioRequest usuario){
+    public ResponseEntity<?> criar(@RequestBody UsuarioRequest usuario) {
 
         try {
-            UsuarioResponse usuarioBanco = usuarioService.salvarUsuario(usuario,0L);
+            UsuarioResponse usuarioBanco = usuarioService.salvarUsuario(usuario, 0L);
 
             return ResponseEntity.ok(usuarioBanco);
-        }catch (Exception e){
+        } catch (Exception e) {
 
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -68,25 +69,25 @@ public class UsuarioController {
 
     //PATCHMAPPING ATUALIZAR STATUS - ATUALIZAÇÃO UNITARIA
     @PatchMapping("/{id}/status")
-    public ResponseEntity<Void> atualizarStatus(@PathVariable Long id, @RequestBody AtualizarStatusUsuarioRequest statusRequest){
+    public ResponseEntity<Void> atualizarStatus(@PathVariable Long id, @RequestBody AtualizarStatusUsuarioRequest statusRequest) {
 
-        var atualizarUsuario = usuarioService.atualizarStatus(statusRequest.statusUsuario(),id);
+        var atualizarUsuario = usuarioService.atualizarStatus(statusRequest.statusUsuario(), id);
 
-        if(atualizarUsuario){
+        if (atualizarUsuario) {
             return ResponseEntity.ok().build();
         }
 
-        return  ResponseEntity.notFound().build();
+        return ResponseEntity.notFound().build();
     }
 
 
     //PUTMAPPING ATUALIZAÇÃO DE USUARIO
     @PutMapping("/{id}")
-    public ResponseEntity<?> atualizar(@PathVariable Long id, @RequestBody UsuarioRequest usuario){
+    public ResponseEntity<?> atualizar(@PathVariable Long id, @RequestBody UsuarioRequest usuario) {
         try {
-            UsuarioResponse usuarioBanco = usuarioService.salvarUsuario(usuario,id);
+            UsuarioResponse usuarioBanco = usuarioService.salvarUsuario(usuario, id);
             return ResponseEntity.ok(usuarioBanco);
-        }catch (Exception e){
+        } catch (Exception e) {
 
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -95,14 +96,20 @@ public class UsuarioController {
 
     //DELETEMAPPING - EXCLUSÃO DE USUARIO
     @DeleteMapping("/{id}/excluir")
-    public ResponseEntity<Void> excluir(@PathVariable Long id){
+    public ResponseEntity<Void> excluir(@PathVariable Long id) {
 
-        var atualizarUsuario = usuarioService.atualizarStatus(EnumStatusUsuario.EXCLUIDO,id);
+        var atualizarUsuario = usuarioService.atualizarStatus(EnumStatusUsuario.EXCLUIDO, id);
 
-        if(atualizarUsuario){
+        if (atualizarUsuario) {
             return ResponseEntity.ok().build();
         }
 
-        return  ResponseEntity.notFound().build();
+        return ResponseEntity.notFound().build();
+    }
+
+    @GetMapping("/buscarusuariologado")
+    @Operation(summary = "Usuario Logado",description = "Usuario logado")
+    public ResponseEntity<UsuarioResponse> buscarUsuarioLogado(){
+        return ResponseEntity.ok(usuarioService.BuscarUsuarioLogado());
     }
 }

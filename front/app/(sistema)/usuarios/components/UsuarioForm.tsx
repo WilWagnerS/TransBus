@@ -1,7 +1,7 @@
 "use client"
 
+import { atualizarUsuario, salvarUsuario } from "@/app/services/usuarioService";
 import { Usuario, UsuarioFormProps } from "@/app/types/usuario";
-import axios from "axios";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -10,11 +10,9 @@ export default function UsuarioForm({ usuarioExistente }: UsuarioFormProps) {
 
     const router = useRouter();
 
-    // comentar
     const [usuario, setUsuario] = useState<Usuario>
         (usuarioExistente || new Usuario(null, "", "", "", "", "ATIVO"));
 
-    // Change significa alteração de algo // Campos sempre por na ordem que esta desde la do backend.
     const handlerChange = (campo: 'nome' | 'cpf' | 'email' | 'senha', valor: string) => {
         setUsuario(valorAnterior =>
             new Usuario(
@@ -28,33 +26,25 @@ export default function UsuarioForm({ usuarioExistente }: UsuarioFormProps) {
         )
     }
 
-
     const handlerSalvar = async (formData: FormData) => {
 
         if (usuarioExistente) {
-            var dadosRetorno = await axios.put<number>('http://localhost:8080/usuarios/'+usuario.id, usuario); //aqui chama a API do usuario e aplica o valor que foi recebido.
-
-            if (dadosRetorno.status == 200) {
+            var dadosRetorno = await atualizarUsuario(usuario);
+            if (dadosRetorno) {
                 alert("Usuario foi salvo com sucesso!");
-
             } else {
-                alert(dadosRetorno.data);
-
-                return //para de executar.
+                alert("Erro ao salvar o usuario!");
+                return
             }
 
         } else {
-            var dadosRetorno = await axios.post<number>('http://localhost:8080/usuarios', usuario); //aqui chama a API do usuario e aplica o valor que foi recebido.
-
-            if (dadosRetorno.status == 200) {
-                alert("Usuario foi salvo com sucesso!");
-
-            } else {
-                alert(dadosRetorno.data);
-
-                return //para de executar.
+            var dadosRetorno = await salvarUsuario(usuario);
+            if (dadosRetorno) {
+                alert("Usuário foi salvo com sucesso!");
+            }else{
+                alert("Erro ao salvar Usuário!");
+                return;
             }
-
         }
         router.push("/usuarios");
     }
@@ -71,7 +61,7 @@ export default function UsuarioForm({ usuarioExistente }: UsuarioFormProps) {
                         name="nome"
                         value={usuario.nome}
                         required
-                        onChange={(e) => handlerChange('nome', e.target.value)} //Comentar
+                        onChange={(e) => handlerChange('nome', e.target.value)}
                         type="text"
                         placeholder="Digite o nome completo"
                         className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2.5 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition-colors"
