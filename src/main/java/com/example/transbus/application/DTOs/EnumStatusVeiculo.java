@@ -1,6 +1,6 @@
 package com.example.transbus.application.DTOs;
 
-public enum EnumStatusOnibus {
+public enum EnumStatusVeiculo {
     GARAGEM, //Está parado e disponível para uso.
     EM_SERVICO, //Está realizando uma viagem/rota.
     AVARIADO, //Apresentou um problema e não pode operar.

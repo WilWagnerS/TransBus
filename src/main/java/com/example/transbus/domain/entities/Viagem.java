@@ -31,7 +31,7 @@ public class Viagem {
 
     @ManyToOne
     @JoinColumn(name = "onibus_id")
-    private Onibus onibus;
+    private Veiculo onibus;
 
     @Transient
     private Long motoristaId;

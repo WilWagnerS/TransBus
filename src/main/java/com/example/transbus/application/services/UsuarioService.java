@@ -36,7 +36,7 @@ public class UsuarioService {
 
     public List<UsuarioResponse> listarTodosUsuariosTable() {
         var usuariologado = getUsuarioLogado();
-        if (usuariologado.empresa_id() == 0L) {
+        if (usuariologado == null || usuariologado.empresa_id() == 0L) {
             return usuarioRepository.findAll()
                     .stream()
                     .map(UsuarioResponse::new)
@@ -48,7 +48,9 @@ public class UsuarioService {
                 .toList();
     }
 
-    @Transactional // NOVO: salva Empresa + Admin juntos (se um falhar, nenhum é salvo)
+    @Transactional(rollbackFor = Exception.class) //Salva Empresa + Admin juntos (se um falhar, nenhum é salvo)
+    //Ao adicionar (rollbackFor = Exception.class), você está dizendo explicitamente ao Spring: "Não importa se o erro é leve,
+    //pesado, verificado ou não verificado. Se der qualquer tipo de erro (Exception), desfaça tudo o que foi feito no banco."
     public CriarAdminResponse criarAdmin(CriarAdminRequest criarAdminRequest) {
         if (!criarAdminRequest.secretKey().equals(secret)) {
             return new CriarAdminResponse(0L, "Usuario Salvo com sucesso!");
@@ -65,8 +67,15 @@ public class UsuarioService {
     }
 
     public UsuarioLogado getUsuarioLogado() {
-        return (UsuarioLogado) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        var autenticacao = SecurityContextHolder.getContext().getAuthentication();
+
+        // Com a segurança desligada (Teste 2) não existe usuário logado
+        if (autenticacao == null || !(autenticacao.getPrincipal() instanceof UsuarioLogado)) {
+            return null;
+        }
+        return (UsuarioLogado) autenticacao.getPrincipal();
     }
+
     public UsuarioResponse salvarUsuario(UsuarioRequest usuario, Long id) {
         var usuarioLogado = getUsuarioLogado();
         //Novo Usuario
@@ -120,7 +129,6 @@ public class UsuarioService {
 
         } catch (Exception e) {
             throw new RuntimeException("Erro ao buscar usuario logado!");
-
         }
     }
 }

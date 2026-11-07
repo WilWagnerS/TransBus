@@ -13,7 +13,6 @@ public class SwaggerConfiguration {
 
     @Bean
     public OpenAPI customOpenAPI(){
-
         return new OpenAPI()
                 .addSecurityItem(new SecurityRequirement().addList("bearerAuth"))
                 .components(new Components().addSecuritySchemes("bearerAuth",
@@ -25,7 +24,7 @@ public class SwaggerConfiguration {
                 .info(new Info()
                         .title("TransBus")
                         .version("1.0")
-                        .description("Api para aplicativo de Onibus")
+                        .description("Api para sistema de gestao de transportes.")
                 );
     }
 }

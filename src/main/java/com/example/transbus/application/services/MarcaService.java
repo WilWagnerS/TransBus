@@ -16,7 +16,6 @@ public class MarcaService {
 
     @Value("${spring.secret}")
     private String secret;
-
     @Autowired
     private MarcaRepository marcaRepository;
 

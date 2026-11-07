@@ -2,11 +2,11 @@ package com.example.transbus.presentation;
 
 import com.example.transbus.application.DTOs.AtualizarStatusViagemRequest;
 import com.example.transbus.application.DTOs.EnumStatusMotorista;
-import com.example.transbus.application.DTOs.EnumStatusOnibus;
+import com.example.transbus.application.DTOs.EnumStatusVeiculo;
 import com.example.transbus.application.DTOs.EnumStatusViagem;
 import com.example.transbus.domain.entities.*;
 import com.example.transbus.domain.repository.MotoristaRepository;
-import com.example.transbus.domain.repository.OnibusRepository;
+import com.example.transbus.domain.repository.VeiculoRepository;
 import com.example.transbus.domain.repository.ViagemRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -28,7 +28,7 @@ public class ViagemController {
     private MotoristaRepository motoristaRepository;
 
     @Autowired
-    private OnibusRepository onibusRepository;
+    private VeiculoRepository veiculoRepository;
 
     @GetMapping
     @Operation(summary = "Metodo de consulta de lista de viagem!",
@@ -63,12 +63,12 @@ public class ViagemController {
                 return ResponseEntity.badRequest().build();
             }
             viagem.setMotorista(motoristaBanco);
-            var onibusBanco = onibusRepository
+            var onibusBanco = veiculoRepository
                     .findById(viagem.getOnibusId()).orElse(null);
             if (onibusBanco == null) {
                 return ResponseEntity.notFound().build();
             }
-            if (onibusBanco.getStatus() != EnumStatusOnibus.GARAGEM) {
+            if (onibusBanco.getStatus() != EnumStatusVeiculo.GARAGEM) {
                 return ResponseEntity.badRequest().build();
             }
             viagem.setOnibus(onibusBanco);
@@ -102,7 +102,7 @@ public class ViagemController {
                         return ResponseEntity.notFound().build();
                     }
                     viagemBanco.setMotorista(motoristaBanco);
-                    var onibusBanco = onibusRepository
+                    var onibusBanco = veiculoRepository
                             .findById(viagem.getOnibusId()).orElse(null);
                     if (onibusBanco == null) {
                         return ResponseEntity.notFound().build();
@@ -134,10 +134,10 @@ public class ViagemController {
                         motorista.setStatus(EnumStatusMotorista.EM_EXPEDIENTE);
                         motoristaRepository.save(motorista);
                     }
-                    Onibus onibus = viagemBanco.getOnibus();
+                    Veiculo onibus = viagemBanco.getOnibus();
                     if (onibus != null) {
-                        onibus.setStatus(EnumStatusOnibus.GARAGEM);
-                        onibusRepository.save(onibus);
+                        onibus.setStatus(EnumStatusVeiculo.GARAGEM);
+                        veiculoRepository.save(onibus);
                     }
                 }
                 viagemBanco.setStatus(EnumStatusViagem.CANCELADA);
