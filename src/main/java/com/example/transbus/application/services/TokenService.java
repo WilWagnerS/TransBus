@@ -9,6 +9,7 @@ import com.example.transbus.application.DTOs.LoginRequest;
 import com.example.transbus.application.DTOs.UsuarioLogado;
 import com.example.transbus.domain.repository.TokenRepository;
 import com.example.transbus.domain.repository.UsuarioRepository;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -34,6 +35,13 @@ public class TokenService {
 
     @Autowired
     private TokenRepository tokenRepository;
+
+    // Ao subir o backend, apaga todos os tokens antigos.
+    // Assim, reiniciar o servidor invalida qualquer token emitido antes (Teste 4).
+    @PostConstruct
+    public void limparTokensAoIniciar() {
+        tokenRepository.deleteAll();
+    }
 
     public String gerarToken(LoginRequest loginResquestDto){
 

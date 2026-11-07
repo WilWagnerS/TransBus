@@ -44,14 +44,6 @@ public class Usuario implements UserDetails{
         @JoinColumn(name = "empresa_id", referencedColumnName = "id")
         private Empresa empresa;
 
-        @ManyToMany(fetch = FetchType.LAZY)
-        @JoinTable(
-                name = "tb_matricula",
-                joinColumns = @JoinColumn(name = "Usuario_id"),
-                inverseJoinColumns = @JoinColumn(name = "curso_id")
-        )
-        private Set<Curso> cursos = new HashSet<>();
-
         @Enumerated(EnumType.STRING)
         private EnumStatusUsuario status = EnumStatusUsuario.ATIVO;
 

@@ -1,6 +1,6 @@
 package com.example.transbus.domain.entities;
 
-
+import com.example.transbus.application.DTOs.CriarAdminRequest;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -27,4 +27,10 @@ public class Empresa {
     //O private sempre será uma Lista.
     @OneToMany(mappedBy = "empresa")
     private List<Usuario> usuarios;
+
+    public Empresa(CriarAdminRequest criarAdminRequest) {
+        this.setRazaoSocial(criarAdminRequest.razaoSocial());
+        this.setNomeFantasia(criarAdminRequest.nomeFantasia());
+        this.setCnpj(criarAdminRequest.cnpj());
+    }
 }

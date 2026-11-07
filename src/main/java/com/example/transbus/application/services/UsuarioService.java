@@ -1,13 +1,16 @@
 package com.example.transbus.application.services;
 
 import com.example.transbus.application.DTOs.*;
+import com.example.transbus.domain.entities.Empresa;
 import com.example.transbus.domain.entities.Usuario;
+import com.example.transbus.domain.repository.EmpresaRepository;
 import com.example.transbus.domain.repository.UsuarioRepository;
 import com.example.transbus.domain.valueobject.CPF;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -16,28 +19,23 @@ public class UsuarioService {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
-
+    @Autowired
+    private EmpresaRepository empresaRepository; // NOVO
     @Autowired
     private TokenService tokenService;
-
     @Value("${spring.secret}")
     private String secret;
-
 
     public LoginResponse validarUsuarioAutenticadoRetornaToken(LoginRequest resquest) {
         if (usuarioRepository.existsUsuarioByEmailAndSenha(resquest.email(), resquest.senha())) {
             var token = tokenService.gerarToken(resquest);
-
             return new LoginResponse(token);
         }
-
         return null;
     }
 
     public List<UsuarioResponse> listarTodosUsuariosTable() {
-
         var usuariologado = getUsuarioLogado();
-
         if (usuariologado.empresa_id() == 0L) {
             return usuarioRepository.findAll()
                     .stream()
@@ -50,12 +48,17 @@ public class UsuarioService {
                 .toList();
     }
 
+    @Transactional // NOVO: salva Empresa + Admin juntos (se um falhar, nenhum é salvo)
     public CriarAdminResponse criarAdmin(CriarAdminRequest criarAdminRequest) {
         if (!criarAdminRequest.secretKey().equals(secret)) {
             return new CriarAdminResponse(0L, "Usuario Salvo com sucesso!");
-
         }
+        // NOVO: cria a empresa do administrador
+        Empresa empresa = new Empresa(criarAdminRequest);
+        empresaRepository.save(empresa);
+
         Usuario usuarioAdminSalvar = new Usuario(criarAdminRequest);
+        usuarioAdminSalvar.setEmpresa(empresa); // NOVO: liga o admin à empresa
         usuarioRepository.save(usuarioAdminSalvar);
 
         return new CriarAdminResponse(usuarioAdminSalvar.getId(), "Usuario Salvo com sucesso!");
@@ -64,13 +67,13 @@ public class UsuarioService {
     public UsuarioLogado getUsuarioLogado() {
         return (UsuarioLogado) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
-
     public UsuarioResponse salvarUsuario(UsuarioRequest usuario, Long id) {
-
         var usuarioLogado = getUsuarioLogado();
         //Novo Usuario
         if (id == 0L) {
             Usuario usuarioBanco = new Usuario(usuario);
+            // NOVO: o usuário criado pertence à mesma empresa de quem o criou
+            usuarioBanco.setEmpresa(empresaRepository.findById(usuarioLogado.empresa_id()).orElse(null));
             usuarioRepository.save(usuarioBanco);
 
             return new UsuarioResponse(usuarioBanco);
@@ -95,7 +98,6 @@ public class UsuarioService {
         if (usuario == null) {
             return null;
         }
-
         return new UsuarioResponse(usuario);
     }
 
@@ -104,7 +106,6 @@ public class UsuarioService {
         if (usuarioBanco != null) {
             usuarioBanco.setStatus(status);
             usuarioRepository.save(usuarioBanco);
-
             return true;
         }
         return false;

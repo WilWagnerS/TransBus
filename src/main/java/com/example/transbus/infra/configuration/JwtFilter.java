@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.List;
 
 @Component
 public class JwtFilter extends OncePerRequestFilter {
@@ -29,8 +28,9 @@ public class JwtFilter extends OncePerRequestFilter {
                 || uri.startsWith("/v2/api-docs")
                 || uri.startsWith("/v3/api-docs")
                 || uri.startsWith("/swagger-resources")
-                || uri.startsWith("webjars")
+                || uri.startsWith("/webjars")
                 || uri.startsWith("/auth/login")
+                || uri.equals("/usuarios/admin")
         ){
             filterChain.doFilter(request, response);
             return;
@@ -41,28 +41,21 @@ public class JwtFilter extends OncePerRequestFilter {
             String token = authHeader.replace("Bearer ", "");
 
             try{
-
                 var usuarioLogado = tokenService.verificarToken(token);
-
                 var user = new UsernamePasswordAuthenticationToken(
                         usuarioLogado,
                         null,
                         usuarioLogado.authorities()
                 );
-
                 SecurityContextHolder.getContext().setAuthentication(user);
-
             }catch (Exception e){
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 response.getWriter().println("Token inválido");
                 return;
             }
-        }else {
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                response.getWriter().println("Token inválido");
-                return;
-
         }
+
+        // Sem token: quem decide se pode ou não acessar é o SecurityConfiguration.
 
         filterChain.doFilter(request, response);
     }

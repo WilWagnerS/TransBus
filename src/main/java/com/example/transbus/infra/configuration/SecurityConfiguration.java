@@ -24,20 +24,24 @@ public class SecurityConfiguration {
         return http.cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/login",
-                                "/swagger-ui/**",
-                                "/webjars/**",
-                                "/swagger-resources/**",
-                                "/v3/api-docs/**"
-                        ).permitAll()
-                        .requestMatchers(HttpMethod.OPTIONS)
-                        .permitAll()
-                        //.requestMatchers("/usuarios/**")
-                        //.hasRole("ADMIN")
-                        .anyRequest().authenticated()
+                                .requestMatchers("/auth/login",
+                                        "/swagger-ui/**",
+                                        "/webjars/**",
+                                        "/swagger-resources/**",
+                                        "/v3/api-docs/**"
+                                ).permitAll()
+                                .requestMatchers(HttpMethod.POST, "/usuarios/admin")
+                                .permitAll()
+                                .requestMatchers(HttpMethod.OPTIONS)
+                                .permitAll()
+                                //.requestMatchers("/usuarios/**")
+                                //.hasRole("ADMIN")
+                                .anyRequest().authenticated()
+                        // TESTE 2 (apresentação): para desabilitar a segurança,
+                        // comente a linha de cima e descomente a de baixo:
+                        //.anyRequest().permitAll()
                 )
                 .addFilterBefore( jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
-
     }
 }
