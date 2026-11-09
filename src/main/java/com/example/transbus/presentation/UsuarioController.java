@@ -24,8 +24,6 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarioService.listarTodosUsuariosTable());
     }
 
-
-    //POSTMAPPING CRIAÇÃO DE ADMIN
     @PostMapping("/admin")
     public ResponseEntity<CriarAdminResponse> criarAdmin(@RequestBody CriarAdminRequest criarAdminRequest) {
         try {
@@ -38,8 +36,6 @@ public class UsuarioController {
         }
     }
 
-
-    //GETMAPPING POR ID
     @GetMapping("/{id}")
     public ResponseEntity<UsuarioResponse> buscarPorId(@PathVariable Long id) {
         UsuarioResponse usuarioBanco = usuarioService.buscarPorId(id);
@@ -50,8 +46,6 @@ public class UsuarioController {
         return ResponseEntity.notFound().build();
     }
 
-
-    //POSTMAPPING CRIAÇÃO DE USUARIO
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<?> criar(@RequestBody UsuarioRequest usuario) {
@@ -66,8 +60,6 @@ public class UsuarioController {
         }
     }
 
-
-    //PATCHMAPPING ATUALIZAR STATUS - ATUALIZAÇÃO UNITARIA
     @PatchMapping("/{id}/status")
     public ResponseEntity<Void> atualizarStatus(@PathVariable Long id, @RequestBody AtualizarStatusUsuarioRequest statusRequest) {
 
@@ -80,8 +72,6 @@ public class UsuarioController {
         return ResponseEntity.notFound().build();
     }
 
-
-    //PUTMAPPING ATUALIZAÇÃO DE USUARIO
     @PutMapping("/{id}")
     public ResponseEntity<?> atualizar(@PathVariable Long id, @RequestBody UsuarioRequest usuario) {
         try {
@@ -93,8 +83,6 @@ public class UsuarioController {
         }
     }
 
-
-    //DELETEMAPPING - EXCLUSÃO DE USUARIO
     @DeleteMapping("/{id}/excluir")
     public ResponseEntity<Void> excluir(@PathVariable Long id) {
 

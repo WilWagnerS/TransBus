@@ -1,7 +1,5 @@
 package com.example.transbus.application.DTOs;
 
-public record AtualizarStatusVeiculoRequest(
-
-        EnumStatusVeiculo statusVeiculo) {
+public record AtualizarStatusVeiculoRequest(EnumStatusVeiculo statusVeiculo) {
 
 }

@@ -2,14 +2,17 @@ package com.example.transbus.presentation;
 
 import com.example.transbus.application.DTOs.AtualizarStatusMotoristaRequest;
 import com.example.transbus.application.DTOs.EnumStatusMotorista;
-import com.example.transbus.domain.entities.Motorista;
-import com.example.transbus.domain.repository.MotoristaRepository;
+import com.example.transbus.application.DTOs.MotoristaRequest;
+import com.example.transbus.application.DTOs.MotoristaResponse;
+import com.example.transbus.application.services.MotoristaService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/motoristas")
@@ -18,23 +21,21 @@ import org.springframework.web.bind.annotation.*;
 public class MotoristaController {
 
     @Autowired
-    private MotoristaRepository motoristaRepository;
-
+    private MotoristaService motoristaService;
 
     @GetMapping
     @Operation(summary = "Metodo de consulta de lista de motoristas!",
-            description = "Metodo responsavel em efetuar a consulta de todos os motoristas sem filtro!")
-    public ResponseEntity<?> listarTodos(){
+            description = "Metodo responsavel em efetuar a consulta de todos os motoristas da empresa do usuario logado!")
+    public ResponseEntity<List<MotoristaResponse>> listarTodos() {
 
-        return ResponseEntity.ok(motoristaRepository.findAll());
+        return ResponseEntity.ok(motoristaService.listarTodosMotoristasTable());
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "Método responsável pela consulta de um motorista pelo ID!")
-    public ResponseEntity<Motorista> buscarPorId(@PathVariable Long id){
-
-        Motorista motoristaBanco = motoristaRepository.findById(id).orElse(null);
-        if(motoristaBanco != null){
+    public ResponseEntity<MotoristaResponse> buscarPorId(@PathVariable Long id) {
+        MotoristaResponse motoristaBanco = motoristaService.buscarPorId(id);
+        if (motoristaBanco != null) {
             return ResponseEntity.ok(motoristaBanco);
         }
         return ResponseEntity.notFound().build();
@@ -43,22 +44,22 @@ public class MotoristaController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Metodo de criação de motoristas!",
-            description = "Metodo responsavel em efetuar a criação de novos motoristas!")
-    public ResponseEntity<Motorista> criar(@RequestBody Motorista motorista){
-
-        var motoristaBanco = motoristaRepository.save(motorista);
-        return ResponseEntity.ok(motoristaBanco);
+            description = "Metodo responsavel em efetuar a criação de novos motoristas! O endereço é preenchido automaticamente pelo CEP (ViaCEP).")
+    public ResponseEntity<?> criar(@RequestBody MotoristaRequest motorista) {
+        try {
+            MotoristaResponse motoristaBanco = motoristaService.salvarMotorista(motorista, 0L);
+            return ResponseEntity.ok(motoristaBanco);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @PatchMapping("/{id}/status")
     @Operation(summary = "Método responsável pela alteração do status do motorista!")
-    public ResponseEntity<Void> atualizarStatus(@PathVariable Long id, @RequestBody AtualizarStatusMotoristaRequest statusRequest){
+    public ResponseEntity<Void> atualizarStatus(@PathVariable Long id, @RequestBody AtualizarStatusMotoristaRequest statusRequest) {
 
-        //motoristaBanco pra entender que é o motorista que veio do banco.
-        Motorista motoristaBanco = motoristaRepository.findById(id).orElse(null);
-        if(motoristaBanco!= null){
-            motoristaBanco.setStatus(statusRequest.statusMotorista());
-            motoristaRepository.save(motoristaBanco);
+        var atualizarMotorista = motoristaService.atualizarStatus(statusRequest.statusMotorista(), id);
+        if (atualizarMotorista) {
             return ResponseEntity.ok().build();
         }
         return ResponseEntity.notFound().build();
@@ -66,35 +67,26 @@ public class MotoristaController {
 
     @PutMapping("/{id}")
     @Operation(summary = "Método responsável pela atualização dos dados do motorista!")
-    public ResponseEntity<Motorista> atualizar(@PathVariable Long id, @RequestBody Motorista motorista){
-
-        try{
-            Motorista motoristaBanco = motoristaRepository.findById(id).orElse(null);
-            if(motoristaBanco!= null){
-                motoristaBanco.setStatus(motorista.getStatus());
-                motoristaBanco.setNome(motorista.getNome());
-                motoristaBanco.setCnh(motorista.getCnh());
-                motoristaBanco.setTelefone(motorista.getTelefone());
-                motoristaRepository.save(motoristaBanco);
-                return ResponseEntity.ok().build();
+    public ResponseEntity<?> atualizar(@PathVariable Long id, @RequestBody MotoristaRequest motorista) {
+        try {
+            MotoristaResponse motoristaBanco = motoristaService.salvarMotorista(motorista, id);
+            if (motoristaBanco != null) {
+                return ResponseEntity.ok(motoristaBanco);
             }
             return ResponseEntity.notFound().build();
-        }catch (RuntimeException e){
-            throw new RuntimeException(e);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
     @DeleteMapping("/{id}/excluir")
     @Operation(summary = "Método responsável pela exclusão do motorista!")
-    public ResponseEntity<Void> excluir(@PathVariable Long id){
+    public ResponseEntity<Void> excluir(@PathVariable Long id) {
 
-        Motorista motoristaBanco = motoristaRepository.findById(id).orElse(null);
-        if(motoristaBanco!= null){
-            motoristaBanco.setStatus(EnumStatusMotorista.EXCLUIDO);
-            motoristaRepository.save(motoristaBanco);
+        var excluirMotorista = motoristaService.atualizarStatus(EnumStatusMotorista.EXCLUIDO, id);
+        if (excluirMotorista) {
             return ResponseEntity.ok().build();
         }
         return ResponseEntity.notFound().build();
     }
 }
-
