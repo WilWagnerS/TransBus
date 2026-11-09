@@ -1,6 +1,7 @@
 package com.example.transbus.domain.entities;
 
 import com.example.transbus.application.DTOs.EnumStatusViagem;
+import com.example.transbus.application.DTOs.ViagemRequest;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -25,18 +26,25 @@ public class Viagem {
     @Enumerated(EnumType.STRING)
     private EnumStatusViagem status = EnumStatusViagem.AGENDADA;
 
+    // Muitas viagens -> um motorista
     @ManyToOne
     @JoinColumn(name = "motorista_id")
     private Motorista motorista;
 
+    // Muitas viagens -> um veículo
     @ManyToOne
-    @JoinColumn(name = "onibus_id")
-    private Veiculo onibus;
+    @JoinColumn(name = "veiculo_id")
+    private Veiculo veiculo;
 
-    @Transient
-    private Long motoristaId;
+    // Multi-empresa: toda viagem pertence à empresa de quem a cadastrou
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "empresa_id", referencedColumnName = "id")
+    private Empresa empresa;
 
-    @Transient
-    private Long onibusId;
-
+    public Viagem(ViagemRequest viagemRequest) {
+        this.setOrigem(viagemRequest.origem());
+        this.setDestino(viagemRequest.destino());
+        this.setHorarioInicio(viagemRequest.horarioInicio());
+        this.setHorarioFim(viagemRequest.horarioFim());
+    }
 }

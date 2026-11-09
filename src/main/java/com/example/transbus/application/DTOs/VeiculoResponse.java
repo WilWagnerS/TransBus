@@ -5,7 +5,6 @@ import com.example.transbus.domain.entities.Veiculo;
 public record VeiculoResponse(Long id, String placa, String modelo, String capacidade, EnumTipoVeiculo tipo, EnumStatusVeiculo status) {
 
     public VeiculoResponse(Veiculo veiculoEntidade) {
-
         this(
                 veiculoEntidade.getId(),
                 veiculoEntidade.getPlaca(),

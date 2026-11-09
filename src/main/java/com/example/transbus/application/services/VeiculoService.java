@@ -8,6 +8,7 @@ import com.example.transbus.domain.repository.EmpresaRepository;
 import com.example.transbus.domain.repository.VeiculoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -20,6 +21,8 @@ public class VeiculoService {
     private EmpresaRepository empresaRepository;
     @Autowired
     private UsuarioService usuarioService;
+    @Autowired
+    private ViagemService viagemService;
 
     public List<VeiculoResponse> listarTodosVeiculosTable() {
 
@@ -72,11 +75,18 @@ public class VeiculoService {
         return new VeiculoResponse(veiculo);
     }
 
+    @Transactional
     public boolean atualizarStatus(EnumStatusVeiculo status, Long id) {
         Veiculo veiculoBanco = buscarVeiculoDaEmpresa(id);
         if (veiculoBanco != null) {
             veiculoBanco.setStatus(status);
             veiculoRepository.save(veiculoBanco);
+
+            // DIFERENCIAL: veículo avariado -> desvincula as próximas viagens
+            // e coloca a viagem em andamento como COM_PROBLEMA
+            if (status == EnumStatusVeiculo.AVARIADO) {
+                viagemService.tratarVeiculoAvariado(veiculoBanco.getId());
+            }
 
             return true;
         }
