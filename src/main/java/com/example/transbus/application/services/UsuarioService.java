@@ -20,22 +20,28 @@ public class UsuarioService {
     @Autowired
     private UsuarioRepository usuarioRepository;
     @Autowired
-    private EmpresaRepository empresaRepository; // NOVO
+    private EmpresaRepository empresaRepository;
     @Autowired
     private TokenService tokenService;
     @Value("${spring.secret}")
     private String secret;
 
+
     public LoginResponse validarUsuarioAutenticadoRetornaToken(LoginRequest resquest) {
-        if (usuarioRepository.existsUsuarioByEmailAndSenha(resquest.email(), resquest.senha())) {
+        // NOVO: só usuários ATIVOS podem fazer login (EXCLUIDO/BLOQUEADO não entram)
+        if (usuarioRepository.existsUsuarioByEmailAndSenhaAndStatus(resquest.email(), resquest.senha(), EnumStatusUsuario.ATIVO)) {
             var token = tokenService.gerarToken(resquest);
+
             return new LoginResponse(token);
         }
+
         return null;
     }
 
     public List<UsuarioResponse> listarTodosUsuariosTable() {
+
         var usuariologado = getUsuarioLogado();
+
         if (usuariologado == null || usuariologado.empresa_id() == 0L) {
             return usuarioRepository.findAll()
                     .stream()
@@ -48,19 +54,17 @@ public class UsuarioService {
                 .toList();
     }
 
-    @Transactional(rollbackFor = Exception.class) //Salva Empresa + Admin juntos (se um falhar, nenhum é salvo)
-    //Ao adicionar (rollbackFor = Exception.class), você está dizendo explicitamente ao Spring: "Não importa se o erro é leve,
-    //pesado, verificado ou não verificado. Se der qualquer tipo de erro (Exception), desfaça tudo o que foi feito no banco."
+    @Transactional
     public CriarAdminResponse criarAdmin(CriarAdminRequest criarAdminRequest) {
         if (!criarAdminRequest.secretKey().equals(secret)) {
             return new CriarAdminResponse(0L, "Usuario Salvo com sucesso!");
         }
-        // NOVO: cria a empresa do administrador
+
         Empresa empresa = new Empresa(criarAdminRequest);
         empresaRepository.save(empresa);
 
         Usuario usuarioAdminSalvar = new Usuario(criarAdminRequest);
-        usuarioAdminSalvar.setEmpresa(empresa); // NOVO: liga o admin à empresa
+        usuarioAdminSalvar.setEmpresa(empresa);
         usuarioRepository.save(usuarioAdminSalvar);
 
         return new CriarAdminResponse(usuarioAdminSalvar.getId(), "Usuario Salvo com sucesso!");
@@ -77,18 +81,20 @@ public class UsuarioService {
     }
 
     public UsuarioResponse salvarUsuario(UsuarioRequest usuario, Long id) {
+
         var usuarioLogado = getUsuarioLogado();
         //Novo Usuario
         if (id == 0L) {
             Usuario usuarioBanco = new Usuario(usuario);
-            // NOVO: o usuário criado pertence à mesma empresa de quem o criou
-            usuarioBanco.setEmpresa(empresaRepository.findById(usuarioLogado.empresa_id()).orElse(null));
+            if (usuarioLogado != null) {
+                usuarioBanco.setEmpresa(empresaRepository.findById(usuarioLogado.empresa_id()).orElse(null));
+            }
             usuarioRepository.save(usuarioBanco);
 
             return new UsuarioResponse(usuarioBanco);
         } else {
-            //Usuario existente
-            Usuario usuarioBanco = usuarioRepository.findById(id).orElse(null);
+            //Usuario existente (NOVO: só altera se for da empresa do usuário logado)
+            Usuario usuarioBanco = buscarUsuarioDaEmpresa(id);
             if (usuarioBanco != null) {
                 usuarioBanco.setNome(usuario.nome());
                 usuarioBanco.setCpf(new CPF(usuario.cpf()));
@@ -103,18 +109,20 @@ public class UsuarioService {
     }
 
     public UsuarioResponse buscarPorId(Long id) {
-        var usuario = usuarioRepository.findById(id).orElse(null);
+        var usuario = buscarUsuarioDaEmpresa(id); // NOVO
         if (usuario == null) {
             return null;
         }
+
         return new UsuarioResponse(usuario);
     }
 
     public boolean atualizarStatus(EnumStatusUsuario status, Long id) {
-        Usuario usuarioBanco = usuarioRepository.findById(id).orElse(null);
+        Usuario usuarioBanco = buscarUsuarioDaEmpresa(id); // NOVO
         if (usuarioBanco != null) {
             usuarioBanco.setStatus(status);
             usuarioRepository.save(usuarioBanco);
+
             return true;
         }
         return false;
@@ -129,6 +137,18 @@ public class UsuarioService {
 
         } catch (Exception e) {
             throw new RuntimeException("Erro ao buscar usuario logado!");
+
         }
+    }
+
+    // NOVO: busca o usuário pelo id, mas só devolve se for da empresa do usuário logado.
+    // Se for de outra empresa, devolve null -> o controller responde 404 (Teste 3).
+    private Usuario buscarUsuarioDaEmpresa(Long id) {
+        var usuarioLogado = getUsuarioLogado();
+
+        if (usuarioLogado == null || usuarioLogado.empresa_id() == 0L) {
+            return usuarioRepository.findById(id).orElse(null);
+        }
+        return usuarioRepository.findByIdAndEmpresa_Id(id, usuarioLogado.empresa_id()).orElse(null);
     }
 }
