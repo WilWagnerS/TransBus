@@ -13,8 +13,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 
-public class MarcaController {
+public class MarcaVeiculoController {
 
     @FXML
     private TextField txtNome;
@@ -26,7 +27,7 @@ public class MarcaController {
     private TextField txtAno;
 
     @FXML
-    public void salvarMarca(ActionEvent event) throws Exception {
+    public void salvarMarcaVeiculo(ActionEvent event) throws Exception {
         String jsonRequest = String.format("{\n" +
                         "  \"nome\": \"%s\",\n" +
                         "  \"tipo\": \"%s\",\n" +
@@ -60,8 +61,8 @@ public class MarcaController {
     }
 
     private int executaMetodoAPI (String url, String json, String protocoloHttp) throws Exception {
-        URL urlAPI = new URL(url);
 
+        URL urlAPI = new URL(url);
         HttpURLConnection connection = (HttpURLConnection) urlAPI.openConnection();
         connection.setRequestMethod(protocoloHttp);
         connection.setDoOutput(true);
@@ -70,7 +71,7 @@ public class MarcaController {
             connection.setRequestProperty("Content-Type", "application/json");
 
             try (OutputStream os = connection.getOutputStream()) {
-                os.write(json.getBytes());
+                os.write(json.getBytes(StandardCharsets.UTF_8)); // UTF-8 para não quebrar acentos
             }
         }
         return connection.getResponseCode();
