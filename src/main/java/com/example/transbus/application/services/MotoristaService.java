@@ -47,6 +47,7 @@ public class MotoristaService {
         var usuarioLogado = usuarioService.getUsuarioLogado();
         //Novo Motorista
         if (id == 0L) {
+            usuarioService.validarPodeCadastrar();
             Motorista motoristaBanco = new Motorista(motorista);
             motoristaBanco.setEndereco(montarEndereco(motorista));
             if (usuarioLogado != null) {

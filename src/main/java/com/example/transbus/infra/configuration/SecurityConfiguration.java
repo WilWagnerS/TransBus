@@ -34,8 +34,13 @@ public class SecurityConfiguration {
                                 .permitAll()
                                 .requestMatchers(HttpMethod.OPTIONS)
                                 .permitAll()
-                                //.requestMatchers("/usuarios/**")
-                                //.hasRole("ADMIN")
+                                // Qualquer usuário logado pode consultar os próprios dados
+                                .requestMatchers("/usuarios/buscarusuariologado")
+                                .authenticated()
+                                // Somente ADMIN gerencia usuários (o funcionário ROLE_USER não acessa)
+                                .requestMatchers("/usuarios/**")
+                                .hasRole("ADMIN")
+
                                 .anyRequest().authenticated()
                         // TESTE 2 (apresentação): para desabilitar a segurança,
                         // comente a linha de cima e descomente a de baixo:

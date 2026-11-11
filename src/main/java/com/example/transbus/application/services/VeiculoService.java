@@ -44,6 +44,7 @@ public class VeiculoService {
         var usuarioLogado = usuarioService.getUsuarioLogado();
         //Novo Veiculo
         if (id == 0L) {
+            usuarioService.validarPodeCadastrar();
             Veiculo veiculoBanco = new Veiculo(veiculo);
             if (usuarioLogado != null) {
                 veiculoBanco.setEmpresa(empresaRepository.findById(usuarioLogado.empresa_id()).orElse(null));

@@ -60,6 +60,15 @@ public class UsuarioService {
             return new CriarAdminResponse(0L, "Usuario Salvo com sucesso!");
         }
 
+        // DONO DO SISTEMA: ADMIN sem empresa -> vê os dados de todas as empresas
+        if (Boolean.TRUE.equals(criarAdminRequest.global())) {
+            Usuario usuarioGlobal = new Usuario(criarAdminRequest);
+            usuarioRepository.save(usuarioGlobal);
+
+            return new CriarAdminResponse(usuarioGlobal.getId(), "Usuario Salvo com sucesso!");
+        }
+
+        // ADMIN DA EMPRESA: cria a empresa e liga o admin a ela
         Empresa empresa = new Empresa(criarAdminRequest);
         empresaRepository.save(empresa);
 
@@ -80,11 +89,23 @@ public class UsuarioService {
         return (UsuarioLogado) autenticacao.getPrincipal();
     }
 
+    // Usuário GLOBAL (dono do sistema) não pertence a nenhuma empresa:
+    // ele consulta tudo, mas não cadastra (senão o registro ficaria sem empresa).
+    public void validarPodeCadastrar() {
+        var usuarioLogado = getUsuarioLogado();
+        if (usuarioLogado != null && usuarioLogado.empresa_id() == 0L) {
+            throw new IllegalArgumentException(
+                    "O usuário global (dono do sistema) apenas consulta os dados. " +
+                            "Os cadastros são feitos pelos usuários de cada empresa.");
+        }
+    }
+
     public UsuarioResponse salvarUsuario(UsuarioRequest usuario, Long id) {
 
         var usuarioLogado = getUsuarioLogado();
         //Novo Usuario
         if (id == 0L) {
+            validarPodeCadastrar();
             Usuario usuarioBanco = new Usuario(usuario);
             if (usuarioLogado != null) {
                 usuarioBanco.setEmpresa(empresaRepository.findById(usuarioLogado.empresa_id()).orElse(null));

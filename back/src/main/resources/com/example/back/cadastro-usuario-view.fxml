@@ -3,17 +3,34 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.back.UsuarioController">
+<AnchorPane prefHeight="560.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.back.UsuarioController">
    <children>
       <Button layoutX="14.0" layoutY="14.0" mnemonicParsing="false" onAction="#voltar" text="Voltar" />
-      <Label layoutX="171.0" layoutY="74.0" text="Nome:" />
-      <Label layoutX="171.0" layoutY="190.0" text="Senha:" />
-      <TextField fx:id="txtNome" layoutX="209.0" layoutY="70.0" prefHeight="26.0" prefWidth="219.0" />
-      <TextField fx:id="txtSenha" layoutX="210.0" layoutY="186.0" prefHeight="26.0" prefWidth="219.0" />
-      <Button layoutX="517.0" layoutY="344.0" mnemonicParsing="false" onAction="#salvarUsuario" text="Salvar" />
-      <Label layoutX="171.0" layoutY="114.0" text="CPF:" />
-      <TextField fx:id="txtCPF" layoutX="210.0" layoutY="110.0" prefHeight="26.0" prefWidth="219.0" />
-      <Label layoutX="171.0" layoutY="152.0" text="Email:" />
-      <TextField fx:id="txtEmail" layoutX="210.0" layoutY="148.0" prefHeight="26.0" prefWidth="219.0" />
+      <Label layoutX="150.0" layoutY="18.0" style="-fx-font-size: 16px; -fx-font-weight: bold;" text="Cadastro de Empresa e Administrador" />
+
+      <!-- Marcar = dono do sistema (sem empresa, vê todas as empresas) -->
+      <CheckBox fx:id="chkGlobal" layoutX="152.0" layoutY="63.0" mnemonicParsing="false" onAction="#alternarGlobal" text="Usuário global (dono do sistema - sem empresa)" />
+
+      <!-- ===== DADOS DA EMPRESA ===== -->
+      <Label layoutX="110.0" layoutY="100.0" style="-fx-font-weight: bold;" text="Dados da Empresa" />
+      <Label layoutX="110.0" layoutY="134.0" text="Razão Social:" />
+      <TextField fx:id="txtRazaoSocial" layoutX="230.0" layoutY="130.0" prefHeight="26.0" prefWidth="250.0" />
+      <Label layoutX="110.0" layoutY="169.0" text="Nome Fantasia:" />
+      <TextField fx:id="txtNomeFantasia" layoutX="230.0" layoutY="165.0" prefHeight="26.0" prefWidth="250.0" />
+      <Label layoutX="110.0" layoutY="204.0" text="CNPJ:" />
+      <TextField fx:id="txtCnpj" layoutX="230.0" layoutY="200.0" prefHeight="26.0" prefWidth="250.0" />
+
+      <!-- ===== DADOS DO ADMINISTRADOR ===== -->
+      <Label layoutX="110.0" layoutY="255.0" style="-fx-font-weight: bold;" text="Dados do Administrador" />
+      <Label layoutX="110.0" layoutY="289.0" text="Nome:" />
+      <TextField fx:id="txtNome" layoutX="230.0" layoutY="285.0" prefHeight="26.0" prefWidth="250.0" />
+      <Label layoutX="110.0" layoutY="324.0" text="CPF:" />
+      <TextField fx:id="txtCPF" layoutX="230.0" layoutY="320.0" prefHeight="26.0" prefWidth="250.0" />
+      <Label layoutX="110.0" layoutY="359.0" text="Email:" />
+      <TextField fx:id="txtEmail" layoutX="230.0" layoutY="355.0" prefHeight="26.0" prefWidth="250.0" />
+      <Label layoutX="110.0" layoutY="394.0" text="Senha:" />
+      <PasswordField fx:id="txtSenha" layoutX="230.0" layoutY="390.0" prefHeight="26.0" prefWidth="250.0" />
+
+      <Button layoutX="510.0" layoutY="510.0" mnemonicParsing="false" onAction="#salvarUsuario" text="Salvar" />
    </children>
 </AnchorPane>

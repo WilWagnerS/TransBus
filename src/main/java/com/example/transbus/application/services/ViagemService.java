@@ -54,6 +54,9 @@ public class ViagemService {
     @Transactional
     public ViagemResponse salvarViagem(ViagemRequest viagem, Long id) {
 
+        if (id == 0L) {
+            usuarioService.validarPodeCadastrar();
+        }
         // Viagem existente: precisa ser da empresa do usuário logado (senão -> 404)
         Viagem viagemBanco = null;
         if (id != 0L) {
