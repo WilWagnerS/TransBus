@@ -1,16 +1,39 @@
 "use client"
 
 import Link from "next/link";
-import OnibusForm from "../components/OnibusForm";
+import { useParams, useRouter } from "next/navigation";
+import VeiculoForm from "../../components/VeiculoForm";
+import { useEffect, useState } from "react";
+import { Veiculo } from "@/app/types/veiculo";
+import { ConsultaVeiculoPorId } from "@/app/services/veiculoService";
 
-export default function CadastroOnibus() {
+export default function EditarVeiculo() {
+    const parametro = useParams();
+    const codigo = Number(parametro.codigo);
+
+    const [veiculo, setVeiculo] = useState<Veiculo | null>(null)
+
+    const router = useRouter();
+    useEffect(() => {
+        buscarDados();
+    }, []);
+
+    const buscarDados = async () => {
+        try {
+            const valorVeiculoBack = await ConsultaVeiculoPorId(codigo);
+            setVeiculo(valorVeiculoBack);
+        } catch (error) {
+            // 404 = veículo não existe ou é de outra empresa
+            router.push("/veiculos");
+        }
+    }
+    if (!veiculo) return (<div className="p-8"> Carregando dados...</div>)
+
     return (
-        /* p-6 md:p-10 adiciona a margem/padding interna para dar o respiro correto nas bordas */
         <div className="w-full min-h-screen p-6 md:p-10 space-y-6">
-            {/* Botão "voltar" fica no canto esquerdo da página com o espaçamento correto */}
             <div>
                 <Link
-                    href="/onibus"
+                    href="/veiculos"
                     className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-800/80 hover:bg-slate-800 text-xs font-medium text-slate-300 hover:text-orange-500 border border-slate-700/60 hover:border-orange-500/50 shadow-sm transition-all duration-200 group w-fit"
                 >
                     <div className="flex items-center justify-center w-5 h-5 rounded-full bg-slate-700/50 group-hover:bg-orange-500/20 text-slate-400 group-hover:text-orange-500 transition-colors">
@@ -28,20 +51,16 @@ export default function CadastroOnibus() {
                     <span>Voltar para Listagem</span>
                 </Link>
             </div>
-
-            {/* Título e Subtítulo centralizados e alinhados com o formulário */}
             <div className="max-w-2xl mx-auto">
                 <h1 className="text-2xl md:text-3xl font-bold text-white tracking-tight">
-                    Novo Ônibus
+                    Veículo cadastrado {codigo}
                 </h1>
                 <p className="text-slate-400 text-sm md:text-base mt-1">
-                    Preencha os dados para registrar um novo ônibus
+                    Edite os dados do veículo
                 </p>
             </div>
-
-            {/* Formulário centralizado */}
             <div className="max-w-2xl mx-auto">
-                <OnibusForm />
+                <VeiculoForm veiculoExistente={veiculo} />
             </div>
         </div>
     );

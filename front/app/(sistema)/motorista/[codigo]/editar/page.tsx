@@ -19,10 +19,11 @@ export default function EditarMotorista() {
     }, []);
 
     const buscarDados = async () => {
-        const valorMotoristaBack = await ConsultaMotoristaPorId(codigo);
-        if (valorMotoristaBack.status) {
+        try {
+            const valorMotoristaBack = await ConsultaMotoristaPorId(codigo);
             setMotorista(valorMotoristaBack);
-        } else {
+        } catch (error) {
+            // 404 = motorista não existe ou é de outra empresa
             router.push("/motorista");
         }
     }

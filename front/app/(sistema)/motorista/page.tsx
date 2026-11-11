@@ -1,14 +1,26 @@
 "use client"
 
-import { atualizarMotorista, buscarListaMotoristas, deletarMotorista } from "@/app/services/motoristaService";
+import { atualizarStatusMotorista, buscarListaMotoristas, excluirMotorista } from "@/app/services/motoristaService";
+import { mensagemDeErro } from "@/app/services/api";
 import { Motorista } from "@/app/types/motorista";
-import axios from "axios";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
+const STATUS_MOTORISTA = ["EM_EXPEDIENTE", "DIRIGINDO", "INTERVALO", "FORA_DE_SERVICO", "INDISPONIVEL"];
+
+function corStatus(status: string) {
+    switch (status) {
+        case "EM_EXPEDIENTE": return "text-green-400 border-green-500/50";
+        case "DIRIGINDO": return "text-purple-400 border-purple-500/50";
+        case "INTERVALO": return "text-sky-400 border-sky-500/50";
+        case "INDISPONIVEL": return "text-red-400 border-red-500/60";
+        default: return "text-slate-400 border-slate-700";
+    }
+}
 
 export default function Motoristas() {
     const [motoristas, setMotoristas] = useState<Motorista[]>([]);
+    const [carregando, setCarregando] = useState(true);
 
     useEffect(() => {
         carregarDados();
@@ -19,181 +31,117 @@ export default function Motoristas() {
             const dados = await buscarListaMotoristas();
             setMotoristas(dados);
         } catch (error) {
-            alert("Erro ao carregar dados do servidor!")
+            const msg = mensagemDeErro(error, "Erro ao carregar dados do servidor!");
+            if (msg) alert(msg);
+        } finally {
+            setCarregando(false);
         }
-
     }
-    const handleDeletarMotorista = async (motoristas: Motorista) => {
-        var dadosRetorno = await deletarMotorista(motoristas.id || 0);
-        if (dadosRetorno == 200) {
-            alert("Excluido com sucesso!");
-        } else {
-            alert("Erro ao excluir motorista!");
+
+    const handleAlterarStatus = async (motorista: Motorista, novoStatus: string) => {
+        try {
+            await atualizarStatusMotorista(motorista.id || 0, novoStatus);
+            carregarDados();
+        } catch (error) {
+            const msg = mensagemDeErro(error, "Erro ao alterar o status do motorista!");
+            if (msg) alert(msg);
+        }
+    }
+
+    const handleExcluir = async (motorista: Motorista) => {
+        if (!confirm("Deseja excluir o motorista " + motorista.nome + "?")) {
             return;
         }
-        carregarDados();
-    }
-
-    const handleAlterarStatusMotorista = async (motoristas: Motorista) => {
-        await atualizarMotorista(motoristas);
-        carregarDados();
+        try {
+            await excluirMotorista(motorista.id || 0);
+            carregarDados();
+        } catch (error) {
+            const msg = mensagemDeErro(error, "Erro ao excluir o motorista!");
+            if (msg) alert(msg);
+        }
     }
 
     return (
         <div className="min-h-screen bg-gradient-to-r from-[#020617] to-[#0d2872] p-6 md:p-10 space-y-8">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-6 border-b border-slate-800">
                 <h1 className="text-2xl md:text-3xl font-bold text-white tracking-tight">
-                    Gestao de motoristas
+                    Gestão de motoristas
                 </h1>
                 <Link
                     href="/motorista/novo"
-                    className="inline-flex items-center justify-center px-4 py-2.5 bg-orange-500 hover:bg-orange-600 text-white font-semibold text-sm rounded-lg shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:ring-offset-slate-950"
+                    className="inline-flex items-center justify-center px-4 py-2.5 bg-orange-500 hover:bg-orange-600 text-white font-semibold text-sm rounded-lg shadow-sm transition-all duration-200"
                 >
                     Cadastrar Motorista
                 </Link>
             </div>
+
             <div className="bg-slate-900 border border-slate-800 rounded-xl shadow-xl overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse">
                         <thead className="bg-slate-800/60 border-b border-slate-800">
                             <tr>
-                                <th className="px-6 py-4 text-xs font-semibold text-slate-300 uppercase text-center tracking-wider">
-                                    Codigo
-                                </th>
-                                <th className="px-6 py-4 text-xs font-semibold text-slate-300 uppercase text-center tracking-wider">
-                                    Nome
-                                </th>
-                                <th className="px-6 py-4 text-xs font-semibold text-slate-300 uppercase text-center tracking-wider">
-                                    CNH
-                                </th>
-                                <th className="px-6 py-4 text-xs font-semibold text-slate-300 uppercase text-center tracking-wider">
-                                    Telefone
-                                </th>
-                                <th className="px-6 py-4 text-xs font-semibold text-slate-300 uppercase text-center tracking-wider">
-                                    Status
-                                </th>
-                                <th className="px-6 py-4 text-xs font-semibold text-slate-300 uppercase text-center tracking-wider">
-                                    Ações
-                                </th>
+                                {["Código", "Nome", "CNH", "Telefone", "Cidade", "Status", "Ações"].map((titulo) => (
+                                    <th key={titulo} className="px-6 py-4 text-xs font-semibold text-slate-300 uppercase text-center tracking-wider">
+                                        {titulo}
+                                    </th>
+                                ))}
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-800 text-slate-200">
                             {motoristas.map((motorista) => (
                                 <tr key={motorista.id} className="hover:bg-slate-800/40 transition-colors">
-                                    <td className="px-6 py-4 text-sm font-medium text-center text-slate-100">
-                                        {motorista.id}
+                                    <td className="px-6 py-4 text-sm text-center">{motorista.id}</td>
+                                    <td className="px-6 py-4 text-sm text-center font-medium">{motorista.nome}</td>
+                                    <td className="px-6 py-4 text-sm text-center">{motorista.cnh}</td>
+                                    <td className="px-6 py-4 text-sm text-center">{motorista.telefone}</td>
+                                    <td className="px-6 py-4 text-sm text-center">
+                                        {motorista.endereco ? `${motorista.endereco.cidade}/${motorista.endereco.uf}` : "—"}
                                     </td>
-                                    <td className="px-6 py-4 text-sm font-medium text-center text-slate-100">
-                                        {motorista.nome}
+                                    <td className="px-6 py-4 text-sm text-center">
+                                        {motorista.status === "EXCLUIDO" ? (
+                                            <span className="text-slate-500">EXCLUIDO</span>
+                                        ) : (
+                                            <select
+                                                value={motorista.status}
+                                                onChange={(e) => handleAlterarStatus(motorista, e.target.value)}
+                                                className={`bg-slate-950 border rounded-lg px-2 py-1.5 text-xs font-medium focus:outline-none ${corStatus(motorista.status)}`}
+                                            >
+                                                {STATUS_MOTORISTA.map((s) => <option key={s} value={s}>{s}</option>)}
+                                            </select>
+                                        )}
                                     </td>
-                                    <td className="px-6 py-4 text-sm font-medium text-center text-slate-100">
-                                        {motorista.cnh}
-                                    </td>
-                                    <td className="px-6 py-4 text-sm font-medium text-center text-slate-100">
-                                        {motorista.telefone}
-                                    </td>
-                                    <td className="px-6 py-4 text-sm font-medium text-center text-slate-100">
-                                        {motorista.status}
-                                    </td>
-                                    <td className="px-6 py-4 text-sm font-medium">
-                                        <div className="flex items-center justify-end gap-2">
+                                    <td className="px-6 py-4 text-sm">
+                                        <div className="flex items-center justify-center gap-2">
                                             <Link
                                                 href={`/motorista/${motorista.id}/editar`}
-                                                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-300 hover:text-orange-500 bg-slate-800/80 hover:bg-slate-800 border border-slate-700/60 hover:border-orange-500/50 rounded-lg transition-all duration-200 shadow-sm group"
+                                                className="px-3 py-1.5 text-xs font-medium text-slate-300 hover:text-orange-500 bg-slate-800/80 border border-slate-700/60 hover:border-orange-500/50 rounded-lg transition-all"
                                             >
-                                                <svg
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    fill="none"
-                                                    viewBox="0 0 24 24"
-                                                    strokeWidth="1.8"
-                                                    stroke="currentColor"
-                                                    className="w-3.5 h-3.5 text-slate-400 group-hover:text-orange-500 transition-colors"
-                                                >
-                                                    <path
-                                                        strokeLinecap="round"
-                                                        strokeLinejoin="round"
-                                                        d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"
-                                                    />
-                                                </svg>
-                                                <span>Editar</span>
+                                                Editar
                                             </Link>
-                                            {(motorista.status !== "EXCLUIDO") && (
+                                            {motorista.status !== "EXCLUIDO" && (
                                                 <button
                                                     type="button"
-                                                    onClick={() => handleDeletarMotorista(motorista)}
-                                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-orange-600 hover:text-orange-800 bg-slate-800/80 hover:bg-slate-800 border border-slate-700/60 hover:border-orange-500/50 rounded-lg transition-all duration-200 shadow-sm group"
+                                                    onClick={() => handleExcluir(motorista)}
+                                                    className="px-3 py-1.5 text-xs font-medium text-orange-600 hover:text-orange-400 bg-slate-800/80 border border-slate-700/60 hover:border-orange-500/50 rounded-lg transition-all"
                                                 >
-                                                    <svg
-                                                        xmlns="http://www.w3.org/2000/svg"
-                                                        fill="none"
-                                                        viewBox="0 0 24 24"
-                                                        strokeWidth="1.8"
-                                                        stroke="currentColor"
-                                                        className="w-3.5 h-3.5 text-orange-600 group-hover:text-orange-800 transition-colors"
-                                                    >
-                                                        <path
-                                                            strokeLinecap="round"
-                                                            strokeLinejoin="round"
-                                                            d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"
-                                                        />
-                                                    </svg>
-                                                    <span>Deletar</span>
+                                                    Excluir
                                                 </button>
                                             )}
-                                            <button
-                                                type="button"
-                                                onClick={() => handleAlterarStatusMotorista(motorista)}
-                                                className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg transition-all duration-200 shadow-sm group 
-                                                    ${motorista.status === 'INDISPONIVEL'
-                                                        ? 'text-white bg-red-600 hover:bg-red-700 border border-red-500 shadow-md shadow-red-900/30'
-                                                        : motorista.status === 'EXCLUIDO'
-                                                            ? 'bg-slate-800/80 hover:bg-slate-800 border border-slate-700/60 text-orange-600 hover:text-orange-800 hover:border-orange-500/50'
-                                                            : motorista.status === 'DIRIGINDO'
-                                                                ? 'bg-slate-800/80 hover:bg-slate-800 border border-purple-500/60 text-purple-500 hover:text-purple-400 hover:border-purple-400'
-                                                                : 'bg-slate-800/80 hover:bg-slate-800 border border-slate-700/60 text-green-500 hover:text-green-400 hover:border-green-500/50'
-                                                    }`}
-                                            >
-                                                <svg
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    fill="none"
-                                                    viewBox="0 0 24 24"
-                                                    strokeWidth="1.8"
-                                                    stroke="currentColor"
-                                                    className={`w-3.5 h-3.5 transition-colors 
-                                                        ${motorista.status === 'INDISPONIVEL'
-                                                            ? 'text-white'
-                                                            : motorista.status === 'EXCLUIDO'
-                                                                ? 'text-orange-600 group-hover:text-orange-800'
-                                                                : motorista.status === 'DIRIGINDO'
-                                                                    ? 'text-purple-500 group-hover:text-purple-400'
-                                                                    : 'text-green-500 group-hover:text-green-400'
-                                                        }`}
-                                                >
-                                                    <path
-                                                        strokeLinecap="round"
-                                                        strokeLinejoin="round"
-                                                        d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99"
-                                                    />
-                                                </svg>
-                                                <span>{motorista.status}</span>
-                                            </button>
                                         </div>
                                     </td>
                                 </tr>
                             ))}
-                            {motoristas.length === 0 &&
-                                (
-                                    <tr>
-                                        <td colSpan={5} className="px-6 py-12 text-center font-medium text-slate-100 text-center">
-                                            Nenhum motorista encontrado.
-                                        </td>
-                                    </tr>
-                                )}
-
+                            {!carregando && motoristas.length === 0 && (
+                                <tr>
+                                    <td colSpan={7} className="px-6 py-12 text-center font-medium text-slate-100">
+                                        Nenhum motorista encontrado.
+                                    </td>
+                                </tr>
+                            )}
                         </tbody>
                     </table>
                 </div>
             </div>
-        </div >
-    )
+        </div>
+    );
 }

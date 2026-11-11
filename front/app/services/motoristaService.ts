@@ -1,54 +1,49 @@
-import { Motorista } from "@/app/types/motorista";
+import { Endereco, Motorista } from "@/app/types/motorista";
 import api from "./api";
 
 export async function buscarListaMotoristas(): Promise<Motorista[]> {
-
-    const dados = await api.get<Motorista[]>("http://localhost:8080/motoristas/");
-
-    if (dados.status == 200) {
-        return dados.data;
-    }
-
-    return [];
-}
-
-export async function deletarMotorista(id: number): Promise<number> {
-
-    var dados = await api.delete('http://localhost:8080/motoristas/' + id + '/excluir');
-    return dados.status;
-}
-
-export async function atualizarStatusMotorista(motorista: Motorista): Promise<void> {
-
-    var novoStatus = {};
-    if (motorista.status === "EM_EXPEDIENTE") {
-        novoStatus = { statusMotorista: "DIRIGINDO" }
-    } else {
-        novoStatus = { statusMotorista: "INDISPONIVEL" }
-    }
-    var dadosRetorno = await api.patch('http://localhost:8080/motoristas/' + motorista.id + '/status', novoStatus);
-
-    if (dadosRetorno.status == 200) {
-        alert("Atualizado com sucesso!");
-
-    } else {
-        alert(dadosRetorno.data);
-
-        return
-    }
+    const dados = await api.get<Motorista[]>("/motoristas");
+    return dados.data;
 }
 
 export async function ConsultaMotoristaPorId(id: number): Promise<Motorista> {
-    const valorMotoristaBack = await api.get<Motorista>('http://localhost:8080/motoristas/' + id);
-    return valorMotoristaBack.data;
+    const dados = await api.get<Motorista>("/motoristas/" + id);
+    return dados.data;
 }
 
-export async function atualizarMotorista(motorista: Motorista): Promise<number>{
-    var dadosRetorno = await api.put<number>('http://localhost:8080/motoristas/'+motorista.id, motorista);
-    return dadosRetorno.data;
+// O backend recebe só CEP + número e busca o resto no ViaCEP
+export async function salvarMotorista(motorista: Motorista, cep: string, numero: string): Promise<Motorista> {
+    const dados = await api.post<Motorista>("/motoristas", {
+        nome: motorista.nome,
+        cnh: motorista.cnh,
+        telefone: motorista.telefone,
+        cep: cep,
+        numero: numero
+    });
+    return dados.data;
 }
 
-export async function salvarMotorista(motorista: Motorista): Promise<number>{
-    var dadosRetorno = await api.post<number>('http://localhost:8080/motoristas/', motorista);
-    return dadosRetorno.data;
+export async function atualizarMotorista(motorista: Motorista, cep: string, numero: string): Promise<Motorista> {
+    const dados = await api.put<Motorista>("/motoristas/" + motorista.id, {
+        nome: motorista.nome,
+        cnh: motorista.cnh,
+        telefone: motorista.telefone,
+        cep: cep,
+        numero: numero
+    });
+    return dados.data;
+}
+
+export async function atualizarStatusMotorista(id: number, novoStatus: string): Promise<void> {
+    await api.patch("/motoristas/" + id + "/status", { statusMotorista: novoStatus });
+}
+
+export async function excluirMotorista(id: number): Promise<void> {
+    await api.delete("/motoristas/" + id + "/excluir");
+}
+
+// INTEGRAÇÃO EXTERNA (Teste 5): o backend consulta o ViaCEP e devolve o endereço
+export async function buscarEnderecoPorCep(cep: string): Promise<Endereco> {
+    const dados = await api.get<Endereco>("/endereco/" + cep);
+    return dados.data;
 }

@@ -38,20 +38,24 @@ export async function atualizarStatusUsuario(usuario: Usuario): Promise<void> {
 }
 
 export async function ConsultaUsuarioPorId(id: number): Promise<Usuario> {
-    const valorUsuarioBack = await api.get<Usuario>('http://localhost:8080/usuarios/' + id);
+    const valorUsuarioBack = await api.get<Usuario>("/usuarios/" + id);
     return valorUsuarioBack.data;
 }
 
 export async function atualizarUsuario(usuario: Usuario): Promise<number> {
-    var dadosRetorno = await api.put<number>('http://localhost:8080/usuarios/' + usuario.id, usuario);
+    var dadosRetorno = await api.put<number>("/usuarios/" + usuario.id, usuario);
     return dadosRetorno.data;
 }
 
 export async function salvarUsuario(usuario: Usuario): Promise<number> {
-    var dadosRetorno = await api.post<number>('http://localhost:8080/usuarios/', usuario);
+    var dadosRetorno = await api.post<number>("/usuarios", usuario);
     return dadosRetorno.data;
 }
 
-export async function buscarUsuarioLogado(): Promise<Usuario> {
-    return (await api.get("/usuarios/buscarusuariologado")).data;
+// Recebe o token direto porque, no momento do login, ele ainda não está na store
+export async function buscarUsuarioLogado(token: string): Promise<Usuario> {
+    const resposta = await api.get<Usuario>("/usuarios/buscarusuariologado", {
+        headers: { Authorization: `Bearer ${token}` }
+    });
+    return resposta.data;
 }

@@ -1,15 +1,19 @@
 "use client"
 
 import Link from "next/link";
-import { store } from "../redux/store";
-import { useDispatch } from "react-redux";
+import { RootState } from "../redux/store";
+import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../redux/slice/authSlice";
 
 export default function Header() {
 
-    const usuario = store.getState().auth.usuario;
+    const usuario = useSelector((state: RootState) => state.auth.usuario);
 
     const dispatch = useDispatch();
+
+    const perfil = !usuario ? "" :
+        usuario.role !== "ROLE_ADMIN" ? "Funcionário" :
+            usuario.empresa?.startsWith("Global") ? "Global" : "Administrador";
 
     return (
         <header className="w-full bg-white border-b border-slate-200 shadow-sm sticky top-0 z-40 px-6 py-4">
@@ -33,8 +37,16 @@ export default function Header() {
                                     d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
                             </svg>
                         </div>
-                        <span className="text-slate-800 font-medium text-sm md:text-base">
-                            {usuario? usuario.nome.toLocaleUpperCase() :'Usuário não identificado!'}</span>
+                        <div className="flex flex-col leading-tight">
+                            <span className="text-slate-800 font-medium text-sm md:text-base">
+                                {usuario ? usuario.nome.toLocaleUpperCase() : 'Usuário não identificado!'}
+                            </span>
+                            {usuario && (
+                                <span className="text-xs text-slate-500">
+                                    {perfil} · {usuario.empresa}
+                                </span>
+                            )}
+                        </div>
                     </div>
                     <button
                         type="button"

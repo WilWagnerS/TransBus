@@ -1,9 +1,6 @@
 'use client'
 
-import axios from "axios";
 import { useRouter } from "next/navigation";
-import { LoginResponse } from "../types/auth";
-import Cookies from "js-cookie";
 import { useDispatch } from "react-redux";
 import { login } from "../redux/slice/authSlice";
 import { buscarUsuarioLogado } from "../services/usuarioService";
@@ -17,20 +14,21 @@ export default function Login() {
 
     const handleLogin = async (formData: FormData) => {
         try {
-            debugger;
             const emailTela = formData.get("email")?.toString() ?? "";
             const senhaTela = formData.get("senha")?.toString() ?? "";
+
+            // 1) Autentica e recebe o token
             var loginResposta = await loginBack(emailTela, senhaTela);
 
             if (loginResposta != null) {
-                Cookies.set('token', loginResposta.token, { secure: true, expires: 7 });
-                var usuarioLogado = await buscarUsuarioLogado();
+                // 2) Busca o usuário logado usando o token recebido
+                var usuarioLogado = await buscarUsuarioLogado(loginResposta.token);
 
+                // 3) Guarda token + usuário SOMENTE na store do Redux
                 dispatch(login({
                     token: loginResposta.token,
                     usuario: { ...usuarioLogado }
-                }
-                ));
+                }));
                 router.push("/home")
             } else {
                 alert("Login ou senha Invalido!")

@@ -1,38 +1,16 @@
 "use client"
 
 import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
-import OnibusForm from "../../components/OnibusForm";
-import { useEffect, useState } from "react";
-import { Onibus } from "@/app/types/onibus";
-import { ConsultaOnibusPorId } from "@/app/services/onibusService";
+import VeiculoForm from "../components/VeiculoForm";
 
-export default function EditarOnibus() {
-    const parametro = useParams();
-    const codigo = Number(parametro.codigo);
-
-    const [onibus, setOnibus] = useState<Onibus | null>(null)
-
-    const router = useRouter();
-    useEffect(() => {
-        buscarDados();
-    }, []);
-
-    const buscarDados = async () => {
-        const valorOnibusBack = await ConsultaOnibusPorId(codigo);
-        if (valorOnibusBack.status) {
-            setOnibus(valorOnibusBack);
-        } else {
-            router.push("/onibus")
-        }
-    }
-    if (!onibus) return (<div className="p-8"> Carregando dados...</div>)
-
+export default function CadastroVeiculo() {
     return (
+        /* p-6 md:p-10 adiciona a margem/padding interna para dar o respiro correto nas bordas */
         <div className="w-full min-h-screen p-6 md:p-10 space-y-6">
+            {/* Botão "voltar" fica no canto esquerdo da página com o espaçamento correto */}
             <div>
                 <Link
-                    href="/onibus"
+                    href="/veiculos"
                     className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-800/80 hover:bg-slate-800 text-xs font-medium text-slate-300 hover:text-orange-500 border border-slate-700/60 hover:border-orange-500/50 shadow-sm transition-all duration-200 group w-fit"
                 >
                     <div className="flex items-center justify-center w-5 h-5 rounded-full bg-slate-700/50 group-hover:bg-orange-500/20 text-slate-400 group-hover:text-orange-500 transition-colors">
@@ -50,16 +28,20 @@ export default function EditarOnibus() {
                     <span>Voltar para Listagem</span>
                 </Link>
             </div>
+
+            {/* Título e Subtítulo centralizados e alinhados com o formulário */}
             <div className="max-w-2xl mx-auto">
                 <h1 className="text-2xl md:text-3xl font-bold text-white tracking-tight">
-                    Ônibus cadastrado {codigo}
+                    Novo Veículo
                 </h1>
                 <p className="text-slate-400 text-sm md:text-base mt-1">
-                    Edite os dados do ônibus
+                    Preencha os dados para registrar um novo veículo (ônibus ou caminhão)
                 </p>
             </div>
+
+            {/* Formulário centralizado */}
             <div className="max-w-2xl mx-auto">
-                <OnibusForm onibusExistente={onibus} />
+                <VeiculoForm />
             </div>
         </div>
     );

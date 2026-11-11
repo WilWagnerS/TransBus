@@ -1,13 +1,19 @@
+// Endereço do motorista (preenchido pelo backend via ViaCEP)
+export interface Endereco {
+    cep: string;
+    logradouro: string;
+    numero?: string;
+    bairro: string;
+    cidade: string;
+    uf: string;
+}
+
 // Define a classe que representa um Motorista no frontend.
 export class Motorista {
 
-    // Construtor responsável por receber e inicializar
-    // os dados do motorista.
     constructor(
 
-        // ID do motorista.
-        // number representa um número e null significa que
-        // o motorista pode ainda não possuir um ID.
+        // ID do motorista. null quando ainda não possui ID.
         public id: number | null,
 
         // Nome do motorista.
@@ -19,19 +25,17 @@ export class Motorista {
         // Telefone do motorista.
         public telefone: string,
 
-        // Status atual do motorista.
-        public status: string
+        // Status: FORA_DE_SERVICO, EM_EXPEDIENTE, DIRIGINDO, INTERVALO, INDISPONIVEL, EXCLUIDO.
+        public status: string,
+
+        // Endereço (vem do backend; null se não informou CEP).
+        public endereco: Endereco | null = null
 
     ) {}
-}  
+}
 
-// Define as propriedades que podem ser recebidas
-// pelo componente de formulário de Motorista.
-export interface MotoristaFormProps{
-
-    // motoristaExistente é opcional devido ao "?".
-    //
-    // Quando existir um motorista, ele será utilizado
-    // pelo formulário para carregar os dados de edição.
-    motoristaExistente?:Motorista
+// Propriedades recebidas pelo formulário de Motorista.
+export interface MotoristaFormProps {
+    // Motorista existente (usado na edição).
+    motoristaExistente?: Motorista
 }
