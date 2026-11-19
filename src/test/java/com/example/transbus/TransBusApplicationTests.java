@@ -10,11 +10,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest
 class TransBusApplicationTests {
 
-    // Indica que este método é um teste automatizado.
+    // Indica que este metodo é um teste automatizado.
     @Test
     void contextLoads() {
 
-        // O método está vazio de propósito.
+        // O metodo está vazio de propósito.
         //
         // O objetivo deste teste é simplesmente verificar se o
         // contexto do Spring Boot consegue ser inicializado sem erros.
