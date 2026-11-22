@@ -12,6 +12,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -43,13 +44,19 @@ public class UsuarioService {
         var usuariologado = getUsuarioLogado();
 
         if (usuariologado == null || usuariologado.empresa_id() == 0L) {
+            // Global: primeiro o(s) Global(is), depois por empresa (A, B, ...) e pelo código
             return usuarioRepository.findAll()
                     .stream()
+                    .sorted(Comparator.comparing(
+                                    (Usuario u) -> u.getEmpresa() != null ? u.getEmpresa().getNomeFantasia() : "",
+                                    Comparator.nullsFirst(String.CASE_INSENSITIVE_ORDER))
+                            .thenComparing(Usuario::getId))
                     .map(UsuarioResponse::new)
                     .toList();
         }
         return usuarioRepository.getUsuariosByEmpresa_Id(usuariologado.empresa_id())
                 .stream()
+                .sorted(Comparator.comparing(Usuario::getId))
                 .map(UsuarioResponse::new)
                 .toList();
     }

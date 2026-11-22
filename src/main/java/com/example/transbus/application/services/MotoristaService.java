@@ -10,6 +10,7 @@ import com.example.transbus.domain.valueobject.Endereco;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -32,13 +33,19 @@ public class MotoristaService {
         var usuarioLogado = usuarioService.getUsuarioLogado();
 
         if (usuarioLogado == null || usuarioLogado.empresa_id() == 0L) {
+            // Global: todas as empresas, ordenadas por empresa (A, B, ...) e depois pelo código
             return motoristaRepository.findAll()
                     .stream()
+                    .sorted(Comparator.comparing(
+                                    (Motorista m) -> m.getEmpresa() != null ? m.getEmpresa().getNomeFantasia() : "",
+                                    Comparator.nullsFirst(String.CASE_INSENSITIVE_ORDER))
+                            .thenComparing(Motorista::getId))
                     .map(MotoristaResponse::new)
                     .toList();
         }
         return motoristaRepository.getMotoristasByEmpresa_Id(usuarioLogado.empresa_id())
                 .stream()
+                .sorted(Comparator.comparing(Motorista::getId))
                 .map(MotoristaResponse::new)
                 .toList();
     }

@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -40,13 +41,19 @@ public class ViagemService {
         Long empresaId = getEmpresaIdLogada();
 
         if (empresaId == 0L) {
+            // Global: todas as empresas, ordenadas por empresa (A, B, ...) e depois pelo código
             return viagemRepository.findAll()
                     .stream()
+                    .sorted(Comparator.comparing(
+                                    (Viagem v) -> v.getEmpresa() != null ? v.getEmpresa().getNomeFantasia() : "",
+                                    Comparator.nullsFirst(String.CASE_INSENSITIVE_ORDER))
+                            .thenComparing(Viagem::getId))
                     .map(ViagemResponse::new)
                     .toList();
         }
         return viagemRepository.getViagensByEmpresa_Id(empresaId)
                 .stream()
+                .sorted(Comparator.comparing(Viagem::getId))
                 .map(ViagemResponse::new)
                 .toList();
     }

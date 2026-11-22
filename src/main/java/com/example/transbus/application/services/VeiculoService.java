@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -27,14 +28,21 @@ public class VeiculoService {
     public List<VeiculoResponse> listarTodosVeiculosTable() {
 
         var usuarioLogado = usuarioService.getUsuarioLogado();
+
         if (usuarioLogado == null || usuarioLogado.empresa_id() == 0L) {
+            // Global: todas as empresas, ordenadas por empresa (A, B, ...) e depois pelo código
             return veiculoRepository.findAll()
                     .stream()
+                    .sorted(Comparator.comparing(
+                                    (Veiculo v) -> v.getEmpresa() != null ? v.getEmpresa().getNomeFantasia() : "",
+                                    Comparator.nullsFirst(String.CASE_INSENSITIVE_ORDER))
+                            .thenComparing(Veiculo::getId))
                     .map(VeiculoResponse::new)
                     .toList();
         }
         return veiculoRepository.getVeiculosByEmpresa_Id(usuarioLogado.empresa_id())
                 .stream()
+                .sorted(Comparator.comparing(Veiculo::getId))
                 .map(VeiculoResponse::new)
                 .toList();
     }

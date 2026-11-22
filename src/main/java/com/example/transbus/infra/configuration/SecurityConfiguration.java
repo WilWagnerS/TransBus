@@ -34,6 +34,8 @@ public class SecurityConfiguration {
                                 .permitAll()
                                 .requestMatchers(HttpMethod.POST, "/marcas-veiculo/criar")
                                 .permitAll()
+                                .requestMatchers(HttpMethod.GET, "/empresas/consulta-cnpj/**")
+                                .permitAll()
                                 .requestMatchers(HttpMethod.OPTIONS)
                                 .permitAll()
                                 // Qualquer usuário logado pode consultar os próprios dados

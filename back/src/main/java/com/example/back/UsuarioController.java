@@ -19,6 +19,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javafx.scene.control.Button;
 
 public class UsuarioController {
 
@@ -54,6 +55,9 @@ public class UsuarioController {
     @FXML
     private PasswordField txtSenha;
 
+    @FXML
+    private Button btnBuscarCnpj;
+
     // Bloqueia os campos da empresa quando for usuário global
     @FXML
     public void alternarGlobal() {
@@ -62,6 +66,7 @@ public class UsuarioController {
         txtRazaoSocial.setDisable(global);
         txtNomeFantasia.setDisable(global);
         txtCnpj.setDisable(global);
+        btnBuscarCnpj.setDisable(global);
 
         if (global) {
             txtRazaoSocial.clear();
@@ -204,5 +209,49 @@ public class UsuarioController {
         alerta.setHeaderText(null);
         alerta.setContentText(msg);
         alerta.showAndWait();
+    }
+
+    // Busca razão social e nome fantasia pelo CNPJ (backend -> BrasilAPI)
+    @FXML
+    public void buscarCnpj(ActionEvent event) {
+        String cnpj = txtCnpj.getText() == null ? "" : txtCnpj.getText().replaceAll("[^0-9]", "");
+
+        if (cnpj.length() != 14) {
+            showMessage(Alert.AlertType.WARNING, "Informe um CNPJ com 14 dígitos!");
+            return;
+        }
+
+        try {
+            URL urlAPI = new URL("http://localhost:8080/empresas/consulta-cnpj/" + cnpj);
+            HttpURLConnection connection = (HttpURLConnection) urlAPI.openConnection();
+            connection.setRequestMethod("GET");
+
+            int status = connection.getResponseCode();
+            InputStream corpoStream = status < 400 ? connection.getInputStream() : connection.getErrorStream();
+            String corpo = corpoStream != null ? new String(corpoStream.readAllBytes(), StandardCharsets.UTF_8) : "";
+
+            if (status == 200) {
+                txtRazaoSocial.setText(extrairTexto(corpo, "razaoSocial"));
+                txtNomeFantasia.setText(extrairTexto(corpo, "nomeFantasia"));
+                txtCnpj.setText(cnpj);
+            } else {
+                showMessage(Alert.AlertType.ERROR, corpo.trim().isEmpty() ? "Erro ao consultar o CNPJ!" : corpo);
+            }
+
+        } catch (ConnectException e) {
+            showMessage(Alert.AlertType.ERROR,
+                    "Não foi possível conectar ao backend.\nVerifique se a API está rodando em http://localhost:8080.");
+        } catch (Exception e) {
+            showMessage(Alert.AlertType.ERROR, "Erro inesperado: " + e.getMessage());
+        }
+    }
+
+    // Procura o "campo": "valor" dentro do JSON de resposta
+    private String extrairTexto(String corpo, String campo) {
+        Matcher matcher = Pattern.compile("\"" + campo + "\"\\s*:\\s*\"((?:[^\"\\\\]|\\\\.)*)\"").matcher(corpo);
+        if (!matcher.find()) {
+            return "";
+        }
+        return matcher.group(1).replace("\\\"", "\"").replace("\\\\", "\\");
     }
 }
