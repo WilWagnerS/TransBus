@@ -43,18 +43,15 @@ export default function Usuarios() {
                 <h1 className="text-2xl md:text-3xl font-bold text-white tracking-tight">
                     Gestao de usuarios
                 </h1>
-                <Link
-                    href="/usuarios/novo"
-                    className="inline-flex items-center justify-center px-4 py-2.5 bg-orange-500 hover:bg-orange-600 text-white font-semibold text-sm rounded-lg shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:ring-offset-slate-950"
-                >
-                    Cadastrar usuário
-                </Link>
             </div>
             <div className="bg-slate-900 border border-slate-800 rounded-xl shadow-xl overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse">
                         <thead className="bg-slate-800/60 border-b border-slate-800">
                             <tr>
+                                <th className="px-6 py-4 text-xs font-semibold text-slate-300 uppercase text-center tracking-wider">
+                                    Empresa
+                                </th>
                                 <th className="px-6 py-4 text-xs font-semibold text-slate-300 uppercase text-center tracking-wider">
                                     Codigo
                                 </th>
@@ -78,6 +75,9 @@ export default function Usuarios() {
                         <tbody className="divide-y divide-slate-800 text-slate-200">
                             {usuarios.map((usuario) => (
                                 <tr key={usuario.id} className="hover:bg-slate-800/40 transition-colors">
+                                    <td className="px-6 py-4 text-sm text-center font-semibold text-orange-400">
+                                        {usuario.empresa}
+                                    </td>
                                     <td className="px-6 py-4 text-sm font-medium text-center text-slate-100">
                                         {usuario.id}
                                     </td>
@@ -176,7 +176,7 @@ export default function Usuarios() {
                             ))}
                             {usuarios.length === 0 && (
                                 <tr>
-                                    <td colSpan={6} className="px-6 py-12 text-center font-medium text-slate-400">
+                                    <td colSpan={7} className="px-6 py-12 text-center font-medium text-slate-400">
                                         Nenhum usuário encontrado.
                                     </td>
                                 </tr>

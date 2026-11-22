@@ -39,7 +39,7 @@ public class MarcaVeiculoController {
                 txtAno.getText(),
                 "sifi3232fayugfy3232auweba75675d");
 
-        int respostaApi = executaMetodoAPI("http://localhost:8080/marca/criar", jsonRequest, "POST");
+        int respostaApi = executaMetodoAPI("http://localhost:8080/marcas-veiculo/criar", jsonRequest, "POST");
 
         if (respostaApi == 200){
             showMessage(Alert.AlertType.INFORMATION, "Marca salva com sucesso!");

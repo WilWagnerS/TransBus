@@ -81,6 +81,7 @@ public class UsuarioService {
 
         Usuario usuarioAdminSalvar = new Usuario(criarAdminRequest);
         usuarioAdminSalvar.setEmpresa(empresa);
+        usuarioAdminSalvar.setRole("ROLE_USER"); // a empresa cliente é USUÁRIO; ADMIN é só o dono do sistema
         usuarioRepository.save(usuarioAdminSalvar);
 
         return new CriarAdminResponse(usuarioAdminSalvar.getId(), "Usuario Salvo com sucesso!");
@@ -102,8 +103,8 @@ public class UsuarioService {
         var usuarioLogado = getUsuarioLogado();
         if (usuarioLogado != null && usuarioLogado.empresa_id() == 0L) {
             throw new IllegalArgumentException(
-                    "O usuário global (dono do sistema) apenas consulta os dados. " +
-                            "Os cadastros são feitos pelos usuários de cada empresa.");
+                    "O administrador do sistema apenas consulta os dados. " +
+                            "Os cadastros são feitos pelo usuário de cada empresa.");
         }
     }
 

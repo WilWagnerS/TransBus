@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/marca")
+@RequestMapping("/marcas-veiculo")
 @Tag(name = "Marca Veiculo", description = "Endpoints responsáveis pelo gerenciamento das marcas de onibus do sistema TransBus, permitindo consultar e cadastrar.")
 public class MarcaVeiculoController {
 

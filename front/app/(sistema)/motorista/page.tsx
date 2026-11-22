@@ -5,6 +5,8 @@ import { mensagemDeErro } from "@/app/services/api";
 import { Motorista } from "@/app/types/motorista";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { RootState } from "@/app/redux/store";
+import { useSelector } from "react-redux";
 
 const STATUS_MOTORISTA = ["EM_EXPEDIENTE", "DIRIGINDO", "INTERVALO", "FORA_DE_SERVICO", "INDISPONIVEL"];
 
@@ -21,6 +23,10 @@ function corStatus(status: string) {
 export default function Motoristas() {
     const [motoristas, setMotoristas] = useState<Motorista[]>([]);
     const [carregando, setCarregando] = useState(true);
+
+    // Perfil: o Admin (dono do sistema) vê todas as empresas e apenas consulta
+    const usuario = useSelector((state: RootState) => state.auth.usuario);
+    const ehAdmin = usuario?.role === "ROLE_ADMIN";
 
     useEffect(() => {
         carregarDados();
@@ -67,12 +73,14 @@ export default function Motoristas() {
                 <h1 className="text-2xl md:text-3xl font-bold text-white tracking-tight">
                     Gestão de motoristas
                 </h1>
+                {!ehAdmin && (
                 <Link
                     href="/motorista/novo"
                     className="inline-flex items-center justify-center px-4 py-2.5 bg-orange-500 hover:bg-orange-600 text-white font-semibold text-sm rounded-lg shadow-sm transition-all duration-200"
                 >
                     Cadastrar Motorista
                 </Link>
+                )}
             </div>
 
             <div className="bg-slate-900 border border-slate-800 rounded-xl shadow-xl overflow-hidden">
@@ -80,7 +88,7 @@ export default function Motoristas() {
                     <table className="w-full text-left border-collapse">
                         <thead className="bg-slate-800/60 border-b border-slate-800">
                             <tr>
-                                {["Código", "Nome", "CNH", "Telefone", "Cidade", "Status", "Ações"].map((titulo) => (
+                                {[...(ehAdmin ? ["Empresa"] : []), "Código", "Nome", "CNH", "Telefone", "Cidade", "Status", ...(ehAdmin ? [] : ["Ações"])].map((titulo) => (
                                     <th key={titulo} className="px-6 py-4 text-xs font-semibold text-slate-300 uppercase text-center tracking-wider">
                                         {titulo}
                                     </th>
@@ -90,6 +98,9 @@ export default function Motoristas() {
                         <tbody className="divide-y divide-slate-800 text-slate-200">
                             {motoristas.map((motorista) => (
                                 <tr key={motorista.id} className="hover:bg-slate-800/40 transition-colors">
+                                    {ehAdmin && (
+                                        <td className="px-6 py-4 text-sm text-center font-semibold text-orange-400">{motorista.empresa}</td>
+                                    )}
                                     <td className="px-6 py-4 text-sm text-center">{motorista.id}</td>
                                     <td className="px-6 py-4 text-sm text-center font-medium">{motorista.nome}</td>
                                     <td className="px-6 py-4 text-sm text-center">{motorista.cnh}</td>
@@ -98,8 +109,8 @@ export default function Motoristas() {
                                         {motorista.endereco ? `${motorista.endereco.cidade}/${motorista.endereco.uf}` : "—"}
                                     </td>
                                     <td className="px-6 py-4 text-sm text-center">
-                                        {motorista.status === "EXCLUIDO" ? (
-                                            <span className="text-slate-500">EXCLUIDO</span>
+                                        {ehAdmin || motorista.status === "EXCLUIDO" ? (
+                                            <span className={`inline-block px-2 py-1 rounded-md border text-xs font-medium ${corStatus(motorista.status)}`}>{motorista.status}</span>
                                         ) : (
                                             <select
                                                 value={motorista.status}
@@ -110,6 +121,7 @@ export default function Motoristas() {
                                             </select>
                                         )}
                                     </td>
+                                    {!ehAdmin && (
                                     <td className="px-6 py-4 text-sm">
                                         <div className="flex items-center justify-center gap-2">
                                             <Link
@@ -129,6 +141,7 @@ export default function Motoristas() {
                                             )}
                                         </div>
                                     </td>
+                                    )}
                                 </tr>
                             ))}
                             {!carregando && motoristas.length === 0 && (

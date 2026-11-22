@@ -32,7 +32,10 @@ export class Viagem {
         public motoristaNome?: string,
 
         // Placa do veículo (vem pronta do backend, para a tabela).
-        public veiculoPlaca?: string
+        public veiculoPlaca?: string,
+
+        // Nome da empresa da viagem (usado na visão do Admin).
+        public empresa?: string
 
     ) {}
 }

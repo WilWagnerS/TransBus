@@ -29,7 +29,10 @@ export class Motorista {
         public status: string,
 
         // Endereço (vem do backend; null se não informou CEP).
-        public endereco: Endereco | null = null
+        public endereco: Endereco | null = null,
+
+        // Nome da empresa do motorista (usado na visão do Admin).
+        public empresa?: string
 
     ) {}
 }

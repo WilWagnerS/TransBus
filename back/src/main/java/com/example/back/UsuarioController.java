@@ -86,7 +86,7 @@ public class UsuarioController {
             return;
         }
         if (campoVazio(txtNome) || campoVazio(txtCPF) || campoVazio(txtEmail) || campoVazio(txtSenha)) {
-            showMessage(Alert.AlertType.WARNING, "Preencha os dados do administrador!");
+            showMessage(Alert.AlertType.WARNING, "Preencha os dados de acesso (nome, CPF, e-mail e senha)!");
             return;
         }
 
@@ -120,8 +120,8 @@ public class UsuarioController {
 
                 if (idAdmin > 0) {
                     String mensagem = global
-                            ? "Usuário GLOBAL (dono do sistema) cadastrado com sucesso!"
-                            : "Empresa e administrador cadastrados com sucesso!";
+                            ? "Administrador do sistema cadastrado com sucesso!"
+                            : "Empresa e usuário de acesso cadastrados com sucesso!";
                     showMessage(Alert.AlertType.INFORMATION,
                             mensagem + "\nJá é possível fazer login no sistema web.");
                     voltar(event);

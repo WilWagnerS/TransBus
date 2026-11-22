@@ -16,7 +16,7 @@ public record UsuarioResponse(Long id, String nome, String cpf, String email, En
                 usuarioEntidade.getRole(),
                 usuarioEntidade.getEmpresa() != null
                         ? usuarioEntidade.getEmpresa().getNomeFantasia()
-                        : "Global (dono do sistema)"
+                        : "TransBus (administrador do sistema)"
         );
     }
 }

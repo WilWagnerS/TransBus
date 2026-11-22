@@ -28,6 +28,10 @@ export default function Veiculos() {
     // Lista, filtro e carregando vêm da STORE do Redux
     const { lista, filtroStatus, carregando } = useSelector((state: RootState) => state.veiculos);
 
+    // Perfil: o Admin (dono do sistema) vê todas as empresas e apenas consulta
+    const usuario = useSelector((state: RootState) => state.auth.usuario);
+    const ehAdmin = usuario?.role === "ROLE_ADMIN";
+
     useEffect(() => {
         dispatch(carregarVeiculos());
     }, [dispatch]);
@@ -80,21 +84,22 @@ export default function Veiculos() {
                         {STATUS_VEICULO.map((s) => <option key={s} value={s}>{s}</option>)}
                         <option value="EXCLUIDO">EXCLUIDO</option>
                     </select>
-                    <Link
-                        href="/veiculos/novo"
-                        className="inline-flex items-center justify-center px-4 py-2.5 bg-orange-500 hover:bg-orange-600 text-white font-semibold text-sm rounded-lg shadow-sm transition-all duration-200"
-                    >
-                        Cadastrar Veículo
-                    </Link>
+                    {!ehAdmin && (
+                        <Link
+                            href="/veiculos/novo"
+                            className="inline-flex items-center justify-center px-4 py-2.5 bg-orange-500 hover:bg-orange-600 text-white font-semibold text-sm rounded-lg shadow-sm transition-all duration-200"
+                        >
+                            Cadastrar Veículo
+                        </Link>
+                    )}
                 </div>
             </div>
-
             <div className="bg-slate-900 border border-slate-800 rounded-xl shadow-xl overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse">
                         <thead className="bg-slate-800/60 border-b border-slate-800">
                             <tr>
-                                {["Código", "Tipo", "Placa", "Modelo", "Capacidade", "Status", "Ações"].map((titulo) => (
+                                {[...(ehAdmin ? ["Empresa"] : []), "Código", "Tipo", "Placa", "Modelo", "Capacidade", "Status", ...(ehAdmin ? [] : ["Ações"])].map((titulo) => (
                                     <th key={titulo} className="px-6 py-4 text-xs font-semibold text-slate-300 uppercase text-center tracking-wider">
                                         {titulo}
                                     </th>
@@ -104,6 +109,10 @@ export default function Veiculos() {
                         <tbody className="divide-y divide-slate-800 text-slate-200">
                             {veiculosFiltrados.map((veiculo) => (
                                 <tr key={veiculo.id} className="hover:bg-slate-800/40 transition-colors">
+                                    {/* Coluna Empresa: só para o Admin */}
+                                    {ehAdmin && (
+                                        <td className="px-6 py-4 text-sm text-center font-semibold text-orange-400">{veiculo.empresa}</td>
+                                    )}
                                     <td className="px-6 py-4 text-sm text-center">{veiculo.id}</td>
                                     <td className="px-6 py-4 text-sm text-center">
                                         {veiculo.tipo === "CAMINHAO" ? "🚚 Caminhão" : "🚌 Ônibus"}
@@ -112,8 +121,9 @@ export default function Veiculos() {
                                     <td className="px-6 py-4 text-sm text-center">{veiculo.modelo}</td>
                                     <td className="px-6 py-4 text-sm text-center">{veiculo.capacidade}</td>
                                     <td className="px-6 py-4 text-sm text-center">
-                                        {veiculo.status === "EXCLUIDO" ? (
-                                            <span className="text-slate-500">EXCLUIDO</span>
+                                        {/* Admin (ou veículo excluído): status só para leitura */}
+                                        {ehAdmin || veiculo.status === "EXCLUIDO" ? (
+                                            <span className={`inline-block px-2 py-1 rounded-md border text-xs font-medium ${corStatus(veiculo.status)}`}>{veiculo.status}</span>
                                         ) : (
                                             <select
                                                 value={veiculo.status}
@@ -124,25 +134,28 @@ export default function Veiculos() {
                                             </select>
                                         )}
                                     </td>
-                                    <td className="px-6 py-4 text-sm">
-                                        <div className="flex items-center justify-center gap-2">
-                                            <Link
-                                                href={`/veiculos/${veiculo.id}/editar`}
-                                                className="px-3 py-1.5 text-xs font-medium text-slate-300 hover:text-orange-500 bg-slate-800/80 border border-slate-700/60 hover:border-orange-500/50 rounded-lg transition-all"
-                                            >
-                                                Editar
-                                            </Link>
-                                            {veiculo.status !== "EXCLUIDO" && (
-                                                <button
-                                                    type="button"
-                                                    onClick={() => handleExcluir(veiculo)}
-                                                    className="px-3 py-1.5 text-xs font-medium text-orange-600 hover:text-orange-400 bg-slate-800/80 border border-slate-700/60 hover:border-orange-500/50 rounded-lg transition-all"
+                                    {/* Coluna Ações: escondida para o Admin */}
+                                    {!ehAdmin && (
+                                        <td className="px-6 py-4 text-sm">
+                                            <div className="flex items-center justify-center gap-2">
+                                                <Link
+                                                    href={`/veiculos/${veiculo.id}/editar`}
+                                                    className="px-3 py-1.5 text-xs font-medium text-slate-300 hover:text-orange-500 bg-slate-800/80 border border-slate-700/60 hover:border-orange-500/50 rounded-lg transition-all"
                                                 >
-                                                    Excluir
-                                                </button>
-                                            )}
-                                        </div>
-                                    </td>
+                                                    Editar
+                                                </Link>
+                                                {veiculo.status !== "EXCLUIDO" && (
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => handleExcluir(veiculo)}
+                                                        className="px-3 py-1.5 text-xs font-medium text-orange-600 hover:text-orange-400 bg-slate-800/80 border border-slate-700/60 hover:border-orange-500/50 rounded-lg transition-all"
+                                                    >
+                                                        Excluir
+                                                    </button>
+                                                )}
+                                            </div>
+                                        </td>
+                                    )}
                                 </tr>
                             ))}
                             {!carregando && veiculosFiltrados.length === 0 && (

@@ -19,7 +19,10 @@ export class Veiculo {
         public tipo: string,
 
         // Status: GARAGEM, EM_SERVICO, AVARIADO, EM_MANUTENCAO, EXCLUIDO.
-        public status: string
+        public status: string,
+
+        // Nome da empresa dona do veículo (usado na visão do Admin).
+        public empresa?: string
 
     ) { }
 }

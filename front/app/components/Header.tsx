@@ -11,9 +11,9 @@ export default function Header() {
 
     const dispatch = useDispatch();
 
+    // Admin = dono do sistema (vê todas as empresas) · Usuário = empresa cliente
     const perfil = !usuario ? "" :
-        usuario.role !== "ROLE_ADMIN" ? "Funcionário" :
-            usuario.empresa?.startsWith("Global") ? "Global" : "Administrador";
+        usuario.role === "ROLE_ADMIN" ? "Administrador do sistema" : "Usuário";
 
     return (
         <header className="w-full bg-white border-b border-slate-200 shadow-sm sticky top-0 z-40 px-6 py-4">
@@ -43,7 +43,7 @@ export default function Header() {
                             </span>
                             {usuario && (
                                 <span className="text-xs text-slate-500">
-                                    {perfil} · {usuario.empresa}
+                                    {usuario.role === "ROLE_ADMIN" ? perfil : `${perfil} · ${usuario.empresa}`}
                                 </span>
                             )}
                         </div>
