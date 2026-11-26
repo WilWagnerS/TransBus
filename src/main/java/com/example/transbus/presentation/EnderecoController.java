@@ -1,6 +1,5 @@
 package com.example.transbus.presentation;
 
-import com.example.transbus.application.DTOs.EnderecoResponse;
 import com.example.transbus.application.services.EnderecoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -24,7 +23,11 @@ public class EnderecoController {
     @GetMapping("/{cep}")
     @Operation(summary = "Método de consulta de endereço pelo CEP!",
             description = "Método responsável em consultar o endereço completo (logradouro, bairro, cidade e UF) na API externa ViaCEP!")
-    public ResponseEntity<EnderecoResponse> buscarEndereco(@PathVariable String cep){
-        return ResponseEntity.ok(enderecoService.BuscarEndereco(cep));
+    public ResponseEntity<?> buscarEndereco(@PathVariable String cep){
+        try {
+            return ResponseEntity.ok(enderecoService.BuscarEndereco(cep));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 }
