@@ -56,13 +56,16 @@ public class ViagemController {
 
     @PatchMapping("/{id}/status")
     @Operation(summary = "Método responsável pela alteração do status da viagem!")
-    public ResponseEntity<Void> atualizarStatus(@PathVariable Long id, @RequestBody AtualizarStatusViagemRequest statusRequest) {
-
-        var atualizarViagem = viagemService.atualizarStatus(statusRequest.statusViagem(), id);
-        if (atualizarViagem) {
-            return ResponseEntity.ok().build();
+    public ResponseEntity<?> atualizarStatus(@PathVariable Long id, @RequestBody AtualizarStatusViagemRequest statusRequest) {
+        try {
+            var atualizarViagem = viagemService.atualizarStatus(statusRequest.statusViagem(), id);
+            if (atualizarViagem) {
+                return ResponseEntity.ok().build();
+            }
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
-        return ResponseEntity.notFound().build();
     }
 
     @PutMapping("/{id}")
@@ -81,12 +84,15 @@ public class ViagemController {
 
     @DeleteMapping("/{id}/cancelar")
     @Operation(summary = "Método responsável pelo cancelamento da viagem!")
-    public ResponseEntity<Void> cancelar(@PathVariable Long id) {
-
-        var cancelarViagem = viagemService.atualizarStatus(EnumStatusViagem.CANCELADA, id);
-        if (cancelarViagem) {
-            return ResponseEntity.ok().build();
+    public ResponseEntity<?> cancelar(@PathVariable Long id) {
+        try {
+            var cancelarViagem = viagemService.atualizarStatus(EnumStatusViagem.CANCELADA, id);
+            if (cancelarViagem) {
+                return ResponseEntity.ok().build();
+            }
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
-        return ResponseEntity.notFound().build();
     }
 }
